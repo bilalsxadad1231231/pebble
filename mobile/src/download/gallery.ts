@@ -1,4 +1,4 @@
-import { Album, Asset, requestPermissionsAsync } from 'expo-media-library';
+import type * as MediaLibraryTypes from 'expo-media-library';
 
 /**
  * Publishing finished downloads to the device gallery.
@@ -6,18 +6,51 @@ import { Album, Asset, requestPermissionsAsync } from 'expo-media-library';
  * Without this a download exists only inside the app's private storage - not in
  * the Gallery, not in a music player, not in any other app's file picker. For a
  * downloader that makes the file effectively unreachable.
+ *
+ * The module is loaded lazily and defensively. `expo-media-library` throws at
+ * *import* time when its native module is absent (Expo Go, or a dev build made
+ * before the dependency was added), and a top-level import of it would take the
+ * whole app down at startup rather than costing us one optional feature.
  */
 
 export const ALBUM_NAME = 'Pebble';
 
+type MediaLibrary = typeof MediaLibraryTypes;
+
+/** `undefined` = not yet attempted, `null` = unavailable on this build. */
+let cachedLib: MediaLibrary | null | undefined;
+
 /** Cached so a batch of downloads does not re-resolve the album each time. */
-let albumPromise: Promise<Album | null> | null = null;
+let albumPromise: Promise<MediaLibraryTypes.Album | null> | null = null;
+
+export class GalleryUnavailableError extends Error {
+  constructor() {
+    super('Saving to the gallery needs a development build, not Expo Go.');
+    this.name = 'GalleryUnavailableError';
+  }
+}
 
 export class GalleryPermissionError extends Error {
   constructor() {
     super('Pebble needs permission to save files to your gallery.');
     this.name = 'GalleryPermissionError';
   }
+}
+
+function mediaLibrary(): MediaLibrary | null {
+  if (cachedLib !== undefined) return cachedLib;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    cachedLib = require('expo-media-library') as MediaLibrary;
+  } catch {
+    cachedLib = null;
+  }
+  return cachedLib;
+}
+
+/** Whether this build can publish to the gallery at all. */
+export function isAvailable(): boolean {
+  return mediaLibrary() !== null;
 }
 
 /**
@@ -27,15 +60,20 @@ export class GalleryPermissionError extends Error {
  * the request names exactly the media kinds this app writes.
  */
 export async function ensurePermission(): Promise<boolean> {
-  const { granted } = await requestPermissionsAsync(false, ['photo', 'video', 'audio']);
+  const lib = mediaLibrary();
+  if (!lib) return false;
+  const { granted } = await lib.requestPermissionsAsync(false, ['photo', 'video', 'audio']);
   return granted;
 }
 
-async function resolveAlbum(firstAsset: Asset): Promise<Album | null> {
-  const existing = await Album.get(ALBUM_NAME);
+async function resolveAlbum(
+  lib: MediaLibrary,
+  firstAsset: MediaLibraryTypes.Asset,
+): Promise<MediaLibraryTypes.Album | null> {
+  const existing = await lib.Album.get(ALBUM_NAME);
   if (existing) return existing;
   // An album cannot be created empty, so the first saved file seeds it.
-  return Album.create(ALBUM_NAME, [firstAsset], false);
+  return lib.Album.create(ALBUM_NAME, [firstAsset], false);
 }
 
 /**
@@ -45,15 +83,17 @@ async function resolveAlbum(firstAsset: Asset): Promise<Album | null> {
  * it was published, or throws so the caller can surface a real reason.
  */
 export async function publish(fileUri: string): Promise<string> {
+  const lib = mediaLibrary();
+  if (!lib) throw new GalleryUnavailableError();
   if (!(await ensurePermission())) throw new GalleryPermissionError();
 
-  const asset = await Asset.create(fileUri);
+  const asset = await lib.Asset.create(fileUri);
 
   // Album placement is a nicety - a failure here must not lose the asset, which
   // is already in the gallery by this point.
   try {
     if (!albumPromise) {
-      albumPromise = resolveAlbum(asset);
+      albumPromise = resolveAlbum(lib, asset);
       await albumPromise;
     } else {
       const album = await albumPromise;

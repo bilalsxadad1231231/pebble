@@ -123,6 +123,11 @@ Permission is requested on the first completed download using Android 13+
 granular grants (`photo`, `video`, `audio`). If it is denied the file is kept and
 the row offers a retry — the transfer is never lost to a permission prompt.
 
+`expo-media-library` throws at **import** time when its native module is missing,
+so it is loaded lazily behind a `require` rather than a top-level import. A
+top-level import takes the whole app down at startup in Expo Go; the lazy form
+costs one optional feature and the row reports "App only".
+
 The size presets mirror the backend's guard rails so a budget that would 422 is
 never offered. `__tests__/logic.test.ts` locks that mirror to the backend's own
 numbers — a 13 MB floor at 300 s, 2,405,333 bps for the worked example — because

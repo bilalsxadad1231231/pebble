@@ -9,7 +9,7 @@ import {
 
 import { api, ApiError, pollJob } from '../api/client';
 import type { DownloadTicket, MediaKind, PrepareRequest } from '../api/types';
-import { GalleryPermissionError, publish } from './gallery';
+import { GalleryPermissionError, GalleryUnavailableError, publish } from './gallery';
 import { syncForegroundService } from './service';
 import type { DownloadListener, DownloadRecord, DownloadStatus } from './types';
 
@@ -344,12 +344,11 @@ class DownloadManager {
       const assetId = await publish(record.fileUri);
       this.patch(id, { galleryAssetId: assetId, galleryError: undefined });
     } catch (cause) {
-      this.patch(id, {
-        galleryError:
-          cause instanceof GalleryPermissionError
-            ? cause.message
-            : `Could not add to gallery: ${String((cause as Error)?.message ?? cause)}`,
-      });
+      const reason =
+        cause instanceof GalleryPermissionError || cause instanceof GalleryUnavailableError
+          ? cause.message
+          : `Could not add to gallery: ${String((cause as Error)?.message ?? cause)}`;
+      this.patch(id, { galleryError: reason });
     }
   }
 
