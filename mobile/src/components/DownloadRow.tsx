@@ -15,6 +15,7 @@ import {
 import { formatBytes, formatDuration } from '../utils/format';
 import { Icon, IconName } from './Icon';
 import { NeuIconButton, NeuInset, NeuPressable } from './Neu';
+import { Thumbnail } from './Thumbnail';
 
 /**
  * A download as it appears in the Library.
@@ -51,13 +52,7 @@ export function DownloadRow({
       style={styles.row}
     >
       <View style={styles.top}>
-        <NeuInset radius={radii.md} style={styles.thumb}>
-          <Icon
-            name={record.kind === 'audio' ? 'music' : 'video'}
-            size={16}
-            color={colors.textFaint}
-          />
-        </NeuInset>
+        <Thumbnail uri={record.thumbnailUri ?? record.thumbnailUrl} kind={record.kind} />
 
         <View style={styles.main}>
           <Text style={styles.title} numberOfLines={1}>
@@ -213,12 +208,6 @@ function detailLine(record: DownloadRecord): string {
 const styles = StyleSheet.create({
   row: { padding: 11, gap: spacing.md },
   top: { flexDirection: 'row', alignItems: 'center', gap: spacing.lg },
-  thumb: {
-    width: 58,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   main: { flex: 1, gap: 3 },
   title: {
     fontFamily: fonts.headingSemi,

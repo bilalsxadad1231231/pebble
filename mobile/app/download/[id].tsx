@@ -6,6 +6,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Icon } from '../../src/components/Icon';
 import { NeuPressable } from '../../src/components/Neu';
 import { ProgressDial } from '../../src/components/ProgressDial';
+import { Thumbnail } from '../../src/components/Thumbnail';
 import { Screen, ScreenHeader } from '../../src/components/Screen';
 import { downloads } from '../../src/download/manager';
 import type { DownloadRecord } from '../../src/download/types';
@@ -102,6 +103,15 @@ export default function DownloadScreen() {
 
       <View style={styles.body}>
         <View style={styles.info}>
+          {record ? (
+            <Thumbnail
+              uri={record.thumbnailUri ?? record.thumbnailUrl}
+              kind={record.kind}
+              width={96}
+              height={72}
+              radius={radii.lg}
+            />
+          ) : null}
           <Text style={styles.title} numberOfLines={2}>
             {record?.title ?? 'Working…'}
           </Text>

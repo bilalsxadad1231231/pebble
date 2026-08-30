@@ -27,6 +27,8 @@ export type StartMeta = {
   platform: string;
   qualityLabel: string;
   kind: MediaKind;
+  /** Poster url from `/resolve`, cached locally on enqueue. */
+  thumbnailUrl?: string | null;
   clip?: { start: number; end: number } | null;
   targetSizeMb?: number | null;
 };
@@ -37,6 +39,13 @@ function uid(): string {
 
 function downloadsDir(): Directory {
   const dir = new Directory(Paths.document, 'Pebble');
+  if (!dir.exists) dir.create({ intermediates: true });
+  return dir;
+}
+
+/** Posters live beside the media but out of the way of the gallery scan. */
+function thumbsDir(): Directory {
+  const dir = new Directory(Paths.cache, 'pebble-thumbs');
   if (!dir.exists) dir.create({ intermediates: true });
   return dir;
 }
@@ -191,12 +200,35 @@ class DownloadManager {
       clip: meta.clip ?? null,
       targetSizeMb: meta.targetSizeMb ?? null,
       kind: meta.kind,
+      thumbnailUrl: meta.thumbnailUrl ?? undefined,
     });
     this.emit();
     void this.persist();
 
+    void this.cacheThumbnail(id);
     void this.prepareThenDownload(id, request);
     return id;
+  }
+
+  /**
+   * Copy the platform's poster into local cache.
+   *
+   * The remote url carries the same expiry parameters the media links do, so a
+   * Library row rendered from it would go blank after a few hours. Best-effort:
+   * a missing poster falls back to an icon and is never worth failing over.
+   */
+  private async cacheThumbnail(id: string): Promise<void> {
+    const record = this.records.get(id);
+    if (!record?.thumbnailUrl || record.thumbnailUri) return;
+
+    try {
+      const target = new File(thumbsDir(), `${id}.img`);
+      if (target.exists) target.delete();
+      const saved = await File.downloadFileAsync(record.thumbnailUrl, target);
+      this.patch(id, { thumbnailUri: saved.uri });
+    } catch {
+      // No poster is a cosmetic loss, not a failure.
+    }
   }
 
   private async prepareThenDownload(id: string, request: PrepareRequest): Promise<void> {
@@ -438,8 +470,11 @@ class DownloadManager {
     this.pauseStates.delete(id);
 
     if (record) {
-      const partial = new File(record.fileUri);
-      if (partial.exists) partial.delete();
+      if (record.fileUri) {
+        const partial = new File(record.fileUri);
+        if (partial.exists) partial.delete();
+      }
+      this.discardThumbnail(record);
       if (record.jobId) void api.cancelJob(record.jobId).catch(() => undefined);
     }
 
@@ -451,13 +486,26 @@ class DownloadManager {
 
   async remove(id: string, deleteFile = true): Promise<void> {
     const record = this.records.get(id);
-    if (record && deleteFile) {
-      const file = new File(record.fileUri);
-      if (file.exists) file.delete();
+    if (record) {
+      if (deleteFile && record.fileUri) {
+        const file = new File(record.fileUri);
+        if (file.exists) file.delete();
+      }
+      this.discardThumbnail(record);
     }
     this.records.delete(id);
     this.emit();
     void this.persist();
+  }
+
+  private discardThumbnail(record: DownloadRecord): void {
+    if (!record.thumbnailUri) return;
+    try {
+      const thumb = new File(record.thumbnailUri);
+      if (thumb.exists) thumb.delete();
+    } catch {
+      /* cache file, nothing depends on it being gone */
+    }
   }
 
   async retry(id: string): Promise<void> {

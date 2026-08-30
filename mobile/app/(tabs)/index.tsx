@@ -140,6 +140,7 @@ export default function HomeScreen() {
         kind: selected.kind,
         clip,
         targetSizeMb: budgetMb,
+        thumbnailUrl: media.thumbnail,
       },
     );
 

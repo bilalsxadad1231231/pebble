@@ -99,6 +99,19 @@ onto the fresh url.
 | Fit to size | `SizeBudget` on Home | Presets; impossible budgets are disabled, not left to fail |
 | Audio tags + cover art | Toggle on Home | Defaults on; turning it off keeps the faster direct path |
 
+## Thumbnails
+
+The poster image from `/resolve` is cached to local storage on enqueue and
+rendered in the format picker, the Library row and the download screen.
+
+Caching matters: platform thumbnail urls carry the same expiry parameters the
+media links do, so a Library row rendered straight from the remote url would go
+blank after a few hours. The local copy lives in the cache directory, is deleted
+with its record, and any failure — expired url, decode error, no poster at all —
+falls back to a media-type icon rather than a broken image box.
+
+YouTube serves webp posters, which Android decodes natively.
+
 ## Gallery
 
 A finished download is copied into the device gallery under a **Pebble** album,

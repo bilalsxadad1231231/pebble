@@ -56,6 +56,11 @@ export type DownloadRecord = {
   /** Set when publishing failed, so the Library can offer to retry it. */
   galleryError?: string;
 
+  /** Poster image from the platform. Expires, so it is only a starting point. */
+  thumbnailUrl?: string;
+  /** Local copy of the poster, which is what the Library actually renders. */
+  thumbnailUri?: string;
+
   /** Tier 1 provenance, so the Library can show what was actually asked for. */
   clip?: ClipRange | null;
   targetSizeMb?: number | null;

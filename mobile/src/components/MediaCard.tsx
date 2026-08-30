@@ -11,9 +11,8 @@ import {
   radii,
   spacing,
 } from '../theme/neumorphic';
-import { formatDuration } from '../utils/format';
-import { Icon } from './Icon';
 import { NeuInset, NeuRaised } from './Neu';
+import { Thumbnail } from './Thumbnail';
 
 /** Platform badge: abbreviation plus a coloured dot, never the platform's logo. */
 export function PlatformChip({
@@ -36,12 +35,11 @@ export function PlatformChip({
 export function MediaCard({ media }: { media: MediaInfo }) {
   return (
     <NeuRaised radius={radii.xl} style={styles.card}>
-      <NeuInset radius={radii.md} style={styles.thumb}>
-        <Icon name="play" size={16} color={colors.textFaint} />
-        {media.duration ? (
-          <Text style={styles.duration}>{formatDuration(media.duration)}</Text>
-        ) : null}
-      </NeuInset>
+      <Thumbnail
+        uri={media.thumbnail}
+        kind="video"
+        duration={media.duration}
+      />
 
       <View style={styles.meta}>
         <Text style={styles.title} numberOfLines={2}>
@@ -63,7 +61,7 @@ export function MediaCard({ media }: { media: MediaInfo }) {
 export function MediaCardSkeleton() {
   return (
     <NeuRaised radius={radii.xl} style={styles.card}>
-      <NeuInset radius={radii.md} style={styles.thumb} />
+      <NeuInset radius={radii.md} style={styles.skeletonThumb} />
       <View style={styles.meta}>
         <NeuInset radius={radii.sm} style={styles.barWide} />
         <NeuInset radius={radii.sm} style={styles.barNarrow} />
@@ -93,20 +91,7 @@ const styles = StyleSheet.create({
     gap: spacing.lg,
     alignItems: 'center',
   },
-  thumb: {
-    width: 58,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  duration: {
-    position: 'absolute',
-    bottom: 2,
-    right: 4,
-    fontSize: 8.5,
-    color: colors.textFaint,
-    fontFamily: fonts.headingSemi,
-  },
+  skeletonThumb: { width: 58, height: 44 },
   meta: { flex: 1, gap: spacing.xs },
   title: {
     fontSize: fontSizes.body,
