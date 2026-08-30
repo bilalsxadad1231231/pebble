@@ -28,6 +28,10 @@
 [DONE]  4. Tier 1 — app surfaces
            clip scrubber, size-budget control, audio tagging toggle
 
+[DONE]  4b. Making downloads usable
+           gallery save via expo-media-library (Pebble album)
+           foreground service so transfers survive backgrounding
+
 [NOW]   5. Entry points
            share intent, QS tile, clipboard-on-foreground, app shortcut
 
@@ -68,6 +72,8 @@ Decisions that were argued and settled. Each records what would reopen it.
 | 11 | No floating overlay bubble | Special permission, OEM-blocked by default in the target market, no maintained library, weak UX case | Users ask post-launch — the QS tile plumbing is reusable |
 | 12 | No accessibility-service clipboard monitoring | Straightforward Play policy violation | Never |
 | 13 | No channel auto-sync | Most ban-attractive feature; would force paid proxies to protect the rest of the app | Downloads move to per-user IPs |
+| 15 | Own foreground-service module, not a community package | No first-party Expo option; `expo-background-task` is deferred periodic work with a 15-min floor. Community foreground-service packages are thinly maintained | A maintained first-party module appears |
+| 16 | Gallery publish is separate from the transfer | A denied permission must not lose a file that already downloaded | — |
 | 14 | Fit-to-size capped at 20 min source | Two-pass encoding a long video on a small VPS is hours of CPU. Long sources trim first | Dedicated encoding capacity exists |
 
 ---

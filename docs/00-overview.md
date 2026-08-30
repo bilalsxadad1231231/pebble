@@ -50,7 +50,8 @@ Recorded here so it is not rediscovered later:
 | Tier 1 features | **BUILT**, 79 tests passing, ffmpeg paths verified live |
 | React Native app | **BUILT** — Expo SDK 57, typecheck + 18 tests + bundle clean, 21/21 expo-doctor |
 | Tier 1 app surfaces | **BUILT** — clip scrubber, size budget, tagging toggle |
-| Entry points, foreground service, gallery save | **PLANNED** |
+| Gallery save + foreground service | **BUILT** |
+| Entry points (share sheet, QS tile, clipboard) | **PLANNED** |
 
 ## Naming
 

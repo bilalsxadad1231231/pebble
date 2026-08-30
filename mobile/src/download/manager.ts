@@ -10,6 +10,7 @@ import {
 import { api, ApiError, pollJob } from '../api/client';
 import type { DownloadTicket, MediaKind, PrepareRequest } from '../api/types';
 import { GalleryPermissionError, publish } from './gallery';
+import { syncForegroundService } from './service';
 import type { DownloadListener, DownloadRecord, DownloadStatus } from './types';
 
 const STORE_KEY = 'pebble.downloads.v1';
@@ -82,6 +83,9 @@ class DownloadManager {
   private emit(): void {
     const snapshot = this.all();
     this.listeners.forEach((listener) => listener(snapshot));
+    // Single choke point for queue state, so the service can never drift out of
+    // step with what is actually running.
+    syncForegroundService(snapshot);
   }
 
   private patch(id: string, changes: Partial<DownloadRecord>): void {

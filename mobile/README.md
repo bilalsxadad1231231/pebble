@@ -116,9 +116,27 @@ numbers — a 13 MB floor at 300 s, 2,405,333 bps for the worked example — bec
 this is exactly the kind of duplicated rule that already drifted once on the
 server.
 
+## Background downloads
+
+Android stops an app's work shortly after it leaves the foreground, so without a
+foreground service a transfer dies the moment the user switches apps. There is no
+first-party Expo module for this — `expo-background-task` is deferred periodic
+work with a 15-minute floor, not a way to keep a transfer alive — so
+`modules/pebble-downloads` is a small local native module:
+
+- A `dataSync` foreground service with an ongoing, silent progress notification.
+- `FOREGROUND_SERVICE_DATA_SYNC` is declared; Android 14+ rejects
+  `startForeground` without a service type and matching permission.
+- The download manager mirrors queue state into it from a single choke point
+  (`emit()`), so the service is alive exactly while something is in flight and
+  never lingers with nothing behind it.
+- Notification updates are rate-limited by content, since progress events fire
+  far more often than the displayed percentage changes.
+- Loaded with `requireOptionalNativeModule`, so in Expo Go it is simply absent
+  and the app runs without background survival rather than crashing.
+
 ## Not built yet
 
 - Share intent, quick settings tile, clipboard-on-foreground
   (see `../docs/05-entry-points.md`)
-- Foreground service, so downloads survive backgrounding
 - Playback; Library rows open the progress screen rather than a player
