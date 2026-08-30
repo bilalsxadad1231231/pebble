@@ -1,0 +1,980 @@
+<title>Downloader Style Specimens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500&family=Nunito:wght@600;700;800&family=Share+Tech+Mono&display=swap">
+
+<style>
+/* ============================================================
+   PAGE CHROME — deliberately quiet. Six loud specimens live
+   inside it, so the gallery itself stays neutral.
+   ============================================================ */
+:root {
+  --ground:      #F2F3F5;
+  --surface:     #FFFFFF;
+  --ink:         #16181D;
+  --ink-2:       #454B57;
+  --ink-3:       #6A7180;
+  --rule:        #D9DDE3;
+  --rule-soft:   #E6E9ED;
+  --accent:      #3A6B5F;
+  --good:        #2E7D5B;
+  --warn:        #8A5F12;
+  --bad:         #A63D33;
+  --good-bg:     #E4F1EA;
+  --warn-bg:     #F6EEDC;
+  --bad-bg:      #F7E5E2;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:    #131519;
+    --surface:   #1B1E24;
+    --ink:       #E9EBEF;
+    --ink-2:     #B4BAC5;
+    --ink-3:     #858C99;
+    --rule:      #2C313A;
+    --rule-soft: #232830;
+    --accent:    #6FB3A2;
+    --good:      #63C79B;
+    --warn:      #D2A44B;
+    --bad:       #E28075;
+    --good-bg:   #1A2E26;
+    --warn-bg:   #2E2718;
+    --bad-bg:    #31201E;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:    #131519;
+  --surface:   #1B1E24;
+  --ink:       #E9EBEF;
+  --ink-2:     #B4BAC5;
+  --ink-3:     #858C99;
+  --rule:      #2C313A;
+  --rule-soft: #232830;
+  --accent:    #6FB3A2;
+  --good:      #63C79B;
+  --warn:      #D2A44B;
+  --bad:       #E28075;
+  --good-bg:   #1A2E26;
+  --warn-bg:   #2E2718;
+  --bad-bg:    #31201E;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "Source Serif 4", Georgia, serif;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 96px; }
+
+/* ---------- masthead ---------- */
+.masthead { padding: 72px 0 40px; border-bottom: 2px solid var(--ink); }
+.eyebrow {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--accent); margin: 0 0 20px;
+}
+h1 {
+  font-family: Archivo, "Helvetica Neue", sans-serif;
+  font-weight: 700; font-size: clamp(34px, 6vw, 56px); line-height: 1.04;
+  letter-spacing: -.025em; margin: 0 0 20px; text-wrap: balance;
+}
+.standfirst {
+  font-size: 19px; line-height: 1.55; color: var(--ink-2);
+  max-width: 62ch; margin: 0;
+}
+.standfirst strong { color: var(--ink); font-weight: 600; }
+
+/* ---------- legend ---------- */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin: 28px 0 0; padding: 0; list-style: none;
+}
+.legend li {
+  display: flex; align-items: center; gap: 8px;
+  font-family: Archivo, sans-serif; font-size: 12.5px; font-weight: 500;
+  color: var(--ink-2); padding: 6px 12px 6px 8px;
+  border: 1px solid var(--rule); border-radius: 999px; background: var(--surface);
+}
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.dot.g { background: var(--good); } .dot.w { background: var(--warn); } .dot.b { background: var(--bad); }
+
+.note {
+  margin: 32px 0 0; padding: 16px 20px;
+  border-left: 3px solid var(--accent); background: var(--surface);
+  font-size: 15px; color: var(--ink-2); max-width: 70ch;
+}
+
+/* ---------- style section ---------- */
+.spec { padding: 64px 0 0; border-top: 1px solid var(--rule-soft); margin-top: 64px; }
+.spec:first-of-type { border-top: 0; }
+
+.spec-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap; margin-bottom: 8px;
+}
+.spec-n {
+  font-family: "JetBrains Mono", monospace; font-size: 12px;
+  color: var(--ink-3); letter-spacing: .1em;
+}
+h2 {
+  font-family: Archivo, sans-serif; font-weight: 700;
+  font-size: clamp(24px, 3.4vw, 33px); letter-spacing: -.02em;
+  margin: 4px 0 0; line-height: 1.15;
+}
+.verdict {
+  font-family: Archivo, sans-serif; font-size: 11.5px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  padding: 7px 14px; border-radius: 999px; white-space: nowrap;
+}
+.verdict.g { color: var(--good); background: var(--good-bg); }
+.verdict.w { color: var(--warn); background: var(--warn-bg); }
+.verdict.b { color: var(--bad);  background: var(--bad-bg); }
+
+.rationale { color: var(--ink-2); max-width: 68ch; margin: 14px 0 0; font-size: 16.5px; }
+.rationale b { color: var(--ink); font-weight: 600; }
+
+/* ---------- token strip ---------- */
+.tokens {
+  display: flex; flex-wrap: wrap; gap: 6px; margin: 22px 0 0;
+  padding: 0; list-style: none;
+}
+.tokens li {
+  display: flex; align-items: center; gap: 7px;
+  font-family: "JetBrains Mono", monospace; font-size: 11px;
+  color: var(--ink-2); background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 6px; padding: 5px 9px 5px 6px;
+}
+.sw { width: 13px; height: 13px; border-radius: 3px; border: 1px solid rgba(128,128,128,.35); flex: none; }
+
+/* ---------- phone gallery ---------- */
+.frames {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 300px));
+  gap: 34px; margin: 32px 0 0; justify-content: start;
+}
+.frame-wrap { display: flex; flex-direction: column; gap: 12px; }
+.frame-cap {
+  font-family: Archivo, sans-serif; font-size: 12px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3);
+}
+
+.phone {
+  width: 300px; height: 622px; border-radius: 38px; overflow: hidden;
+  position: relative; flex: none;
+  box-shadow: 0 1px 2px rgba(16,20,28,.16), 0 18px 40px -12px rgba(16,20,28,.30);
+  border: 1px solid var(--rule);
+}
+
+/* ============================================================
+   SPECIMEN BASE — every mockup shares this structure and reads
+   its palette from scoped custom properties, so the six skins
+   stay honest comparisons of the same screen.
+   ============================================================ */
+.scr {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  background: var(--s-bg); color: var(--s-fg);
+  font-family: var(--s-font); font-size: 13px; line-height: 1.45;
+  z-index: 1;
+}
+.scr * { box-sizing: border-box; }
+
+.statusbar {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 13px 22px 5px; font-size: 11.5px; font-weight: 600;
+  color: var(--s-fg); letter-spacing: .01em; flex: none;
+}
+.sb-r { display: flex; gap: 5px; align-items: center; opacity: .9; }
+.sb-r .ic { width: 13px; height: 13px; }
+
+.hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 18px 12px; flex: none;
+}
+.hdr h3 {
+  margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -.01em;
+  color: var(--s-fg);
+}
+.hdr .sub { font-size: 11.5px; color: var(--s-muted); font-weight: 500; }
+.iconbtn {
+  width: 32px; height: 32px; border-radius: var(--s-r-sm);
+  display: grid; place-items: center; color: var(--s-muted);
+  background: var(--s-chip); border: var(--s-hair);
+}
+.iconbtn .ic { width: 17px; height: 17px; }
+
+.body { flex: 1; overflow: hidden; padding: 0 18px; display: flex; flex-direction: column; gap: 13px; }
+
+/* url bar */
+.urlbar {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--s-elev); border: var(--s-border);
+  border-radius: var(--s-r); padding: 11px 12px; box-shadow: var(--s-shadow);
+}
+.urlbar .ic { width: 15px; height: 15px; color: var(--s-accent); flex: none; }
+.urlbar .url {
+  flex: 1; font-size: 12px; color: var(--s-fg); overflow: hidden;
+  white-space: nowrap; text-overflow: ellipsis; font-family: var(--s-font-mono, var(--s-font));
+}
+.pastebtn {
+  font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--s-on-accent); background: var(--s-accent);
+  padding: 5px 9px; border-radius: var(--s-r-sm); flex: none;
+}
+
+/* resolved media card */
+.card {
+  display: flex; gap: 11px; padding: 10px;
+  background: var(--s-elev); border: var(--s-border);
+  border-radius: var(--s-r); box-shadow: var(--s-shadow);
+}
+.thumb {
+  width: 84px; height: 62px; border-radius: var(--s-r-sm); flex: none;
+  position: relative; overflow: hidden;
+  background: linear-gradient(140deg, #F0A868 0%, #D8556E 46%, #57318C 100%);
+}
+.thumb .play {
+  position: absolute; inset: 0; margin: auto; width: 22px; height: 22px;
+  background: rgba(6,8,12,.52); border-radius: 50%;
+  display: grid; place-items: center; color: #fff;
+}
+.thumb .play .ic { width: 10px; height: 10px; }
+.thumb .dur {
+  position: absolute; right: 4px; bottom: 4px;
+  background: rgba(6,8,12,.78); color: #fff; font-size: 9px; font-weight: 600;
+  padding: 1.5px 4px; border-radius: 3px; letter-spacing: .02em;
+}
+.meta { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 4px; }
+.meta .t {
+  font-size: 12.5px; font-weight: 600; color: var(--s-fg); line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.meta .s { font-size: 11px; color: var(--s-muted); }
+
+.lbl {
+  font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--s-muted); margin-top: 2px;
+}
+
+/* format rows */
+.fmts { display: flex; flex-direction: column; gap: 7px; }
+.fmt {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--s-r);
+  background: var(--s-elev); border: var(--s-border);
+}
+.fmt.sel { border: var(--s-border-sel); background: var(--s-sel-bg); }
+.radio {
+  width: 15px; height: 15px; border-radius: 50%; flex: none;
+  border: 1.5px solid var(--s-muted); display: grid; place-items: center;
+}
+.fmt.sel .radio { border-color: var(--s-accent); }
+.fmt.sel .radio::after {
+  content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--s-accent);
+}
+.fmt-main { flex: 1; min-width: 0; }
+.fmt-t { font-size: 12px; font-weight: 600; color: var(--s-fg); }
+.fmt-s { font-size: 10.5px; color: var(--s-muted); margin-top: 1px; }
+.tag {
+  font-size: 8.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  padding: 3px 6px; border-radius: 4px; flex: none;
+  color: var(--s-tag-fg); background: var(--s-tag-bg); border: var(--s-tag-border, none);
+}
+.tag.srv { color: var(--s-tag2-fg); background: var(--s-tag2-bg); }
+.size { font-size: 11px; font-weight: 600; color: var(--s-fg); flex: none; font-variant-numeric: tabular-nums; }
+
+/* primary action */
+.cta {
+  margin-top: auto; margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px; border-radius: var(--s-r-cta, var(--s-r));
+  background: var(--s-accent); color: var(--s-on-accent);
+  font-size: 14px; font-weight: 700; letter-spacing: .01em;
+  box-shadow: var(--s-cta-shadow, none); border: var(--s-cta-border, none);
+}
+.cta .ic { width: 16px; height: 16px; }
+
+/* downloads list */
+.dls { display: flex; flex-direction: column; gap: 9px; overflow: hidden; }
+.dl {
+  display: flex; gap: 10px; padding: 11px;
+  background: var(--s-elev); border: var(--s-border);
+  border-radius: var(--s-r); box-shadow: var(--s-shadow);
+}
+.dl .thumb { width: 52px; height: 52px; }
+.dl.b2 .thumb { background: linear-gradient(140deg, #4FA8D8 0%, #2E5FA3 52%, #16264F 100%); }
+.dl.b3 .thumb { background: linear-gradient(140deg, #7BD1A0 0%, #2F8F6B 50%, #14483D 100%); }
+.dl.b4 .thumb { background: linear-gradient(140deg, #C8A2E0 0%, #7D53B8 52%, #35205C 100%); }
+.dl-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; justify-content: center; }
+.dl-t {
+  font-size: 12px; font-weight: 600; color: var(--s-fg);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dl-s { font-size: 10px; color: var(--s-muted); font-variant-numeric: tabular-nums; }
+.bar {
+  height: 4px; border-radius: 999px; background: var(--s-track); overflow: hidden; margin-top: 1px;
+}
+.fill { height: 100%; border-radius: 999px; background: var(--s-accent); }
+.fill.anim { animation: creep 5.5s ease-in-out infinite alternate; }
+@keyframes creep { from { width: 62%; } to { width: 78%; } }
+.fill.warnc { background: var(--s-warn); }
+.fill.donec { background: var(--s-done); }
+.act {
+  width: 33px; height: 33px; border-radius: var(--s-r-act, 50%); flex: none;
+  display: grid; place-items: center; align-self: center;
+  background: var(--s-act-bg); color: var(--s-act-fg); border: var(--s-act-border, none);
+}
+.act .ic { width: 14px; height: 14px; }
+.act.ghost { background: var(--s-chip); color: var(--s-muted); }
+.act.ok { background: transparent; color: var(--s-done); }
+
+/* tab bar */
+.tabs {
+  display: flex; justify-content: space-around; align-items: center;
+  padding: 9px 8px 20px; flex: none;
+  background: var(--s-tabbg); border-top: var(--s-hair);
+  backdrop-filter: var(--s-tabblur, none); -webkit-backdrop-filter: var(--s-tabblur, none);
+}
+.tab { display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--s-muted); }
+.tab .ic { width: 19px; height: 19px; }
+.tab span { font-size: 9.5px; font-weight: 600; letter-spacing: .02em; }
+.tab.on { color: var(--s-accent); }
+.tab .badge {
+  position: absolute; transform: translate(11px, -3px);
+  background: var(--s-accent); color: var(--s-on-accent);
+  font-size: 8px; font-weight: 700; min-width: 14px; height: 14px;
+  border-radius: 999px; display: grid; place-items: center; padding: 0 3px;
+}
+
+.ic { display: block; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ic.solid { fill: currentColor; stroke: none; }
+
+/* ============================================================
+   SKIN 1 — Modern Dark (Cinema Mobile)
+   ============================================================ */
+.s-cinema {
+  --s-bg: linear-gradient(178deg, #0A0A0F 0%, #050506 55%, #020203 100%);
+  --s-fg: #EDEDEF; --s-muted: #8A8F98;
+  --s-elev: #0C0C10; --s-chip: rgba(255,255,255,.05);
+  --s-accent: #7C87E8; --s-on-accent: #0B0B14;
+  --s-border: 1px solid rgba(255,255,255,.08);
+  --s-hair: 1px solid rgba(255,255,255,.07);
+  --s-border-sel: 1px solid rgba(124,135,232,.55);
+  --s-sel-bg: rgba(124,135,232,.10);
+  --s-r: 16px; --s-r-sm: 10px;
+  --s-track: rgba(255,255,255,.09);
+  --s-warn: #D9A441; --s-done: #4FC08D;
+  --s-tag-fg: #8FD3B4; --s-tag-bg: rgba(79,192,141,.13);
+  --s-tag2-fg: #A9B2F0; --s-tag2-bg: rgba(124,135,232,.15);
+  --s-act-bg: rgba(124,135,232,.16); --s-act-fg: #A9B2F0;
+  --s-tabbg: rgba(10,10,15,.72); --s-tabblur: blur(20px);
+  --s-cta-shadow: 0 6px 22px -6px rgba(124,135,232,.55);
+  --s-font: Inter, system-ui, sans-serif;
+  --s-shadow: 0 1px 0 rgba(255,255,255,.03) inset;
+}
+/* ambient light blobs — the signature of this direction */
+.s-cinema .blob {
+  position: absolute; border-radius: 50%; filter: blur(46px);
+  opacity: .16; pointer-events: none; z-index: 0;
+}
+.s-cinema .blob.b-a { width: 190px; height: 190px; background: #5E6AD2; top: -40px; left: -50px; animation: drift1 19s ease-in-out infinite alternate; }
+.s-cinema .blob.b-b { width: 160px; height: 160px; background: #C2569A; bottom: 40px; right: -60px; animation: drift2 23s ease-in-out infinite alternate; }
+@keyframes drift1 { from { transform: translate(0,0); } to { transform: translate(34px, 46px); } }
+@keyframes drift2 { from { transform: translate(0,0); } to { transform: translate(-30px,-38px); } }
+
+/* ============================================================
+   SKIN 2 — OLED Dark
+   ============================================================ */
+.s-oled {
+  --s-bg: #000000;
+  --s-fg: #FFFFFF; --s-muted: #9AA0A6;
+  --s-elev: #121212; --s-chip: #1C1C1C;
+  --s-accent: #00E5A0; --s-on-accent: #00160E;
+  --s-border: 1px solid #232323;
+  --s-hair: 1px solid #1C1C1C;
+  --s-border-sel: 1px solid #00E5A0;
+  --s-sel-bg: rgba(0,229,160,.08);
+  --s-r: 10px; --s-r-sm: 7px;
+  --s-track: #232323;
+  --s-warn: #FFB020; --s-done: #00E5A0;
+  --s-tag-fg: #00E5A0; --s-tag-bg: rgba(0,229,160,.12);
+  --s-tag2-fg: #7FB2FF; --s-tag2-bg: rgba(59,130,246,.15);
+  --s-act-bg: #00E5A0; --s-act-fg: #00160E;
+  --s-tabbg: #000000;
+  --s-font: Inter, system-ui, sans-serif;
+  --s-shadow: none;
+}
+
+/* ============================================================
+   SKIN 3 — Glassmorphism
+   ============================================================ */
+.s-glass {
+  --s-bg: #1B1140;
+  --s-fg: #FFFFFF; --s-muted: rgba(255,255,255,.66);
+  --s-elev: rgba(255,255,255,.11); --s-chip: rgba(255,255,255,.14);
+  --s-accent: #FFFFFF; --s-on-accent: #2A1758;
+  --s-border: 1px solid rgba(255,255,255,.22);
+  --s-hair: 1px solid rgba(255,255,255,.16);
+  --s-border-sel: 1px solid rgba(255,255,255,.62);
+  --s-sel-bg: rgba(255,255,255,.20);
+  --s-r: 20px; --s-r-sm: 13px;
+  --s-track: rgba(255,255,255,.20);
+  --s-warn: #FFD166; --s-done: #7BE3B0;
+  --s-tag-fg: #FFFFFF; --s-tag-bg: rgba(255,255,255,.20);
+  --s-tag2-fg: #FFFFFF; --s-tag2-bg: rgba(255,255,255,.14);
+  --s-act-bg: rgba(255,255,255,.22); --s-act-fg: #FFFFFF;
+  --s-tabbg: rgba(255,255,255,.10); --s-tabblur: blur(22px);
+  --s-cta-shadow: 0 8px 26px -8px rgba(0,0,0,.5);
+  --s-font: Inter, system-ui, sans-serif;
+  --s-shadow: 0 1px 0 rgba(255,255,255,.16) inset;
+}
+.s-glass .scr { background: transparent; }
+.s-glass .gbg { position: absolute; inset: 0; z-index: 0; background: #1B1140; overflow: hidden; }
+.s-glass .gbg i {
+  position: absolute; border-radius: 50%; filter: blur(38px); display: block;
+}
+.s-glass .gbg i:nth-child(1) { width: 220px; height: 220px; background: #F0508A; top: -50px; left: -60px; opacity: .82; }
+.s-glass .gbg i:nth-child(2) { width: 200px; height: 200px; background: #3E7BFA; top: 210px; right: -70px; opacity: .78; }
+.s-glass .gbg i:nth-child(3) { width: 230px; height: 230px; background: #23C8A8; bottom: -70px; left: -30px; opacity: .62; }
+.s-glass .urlbar, .s-glass .card, .s-glass .fmt, .s-glass .dl, .s-glass .cta, .s-glass .tabs {
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.s-glass .cta { background: rgba(255,255,255,.92); }
+.s-glass .pastebtn { background: rgba(255,255,255,.92); }
+
+/* ============================================================
+   SKIN 4 — Cyberpunk
+   ============================================================ */
+.s-cyber {
+  --s-bg: #0D0D0D;
+  --s-fg: #00FF66; --s-muted: #16A34A;
+  --s-elev: #0A0F0A; --s-chip: #101A10;
+  --s-accent: #FF00E5; --s-on-accent: #0D0D0D;
+  --s-border: 1px solid rgba(0,255,102,.34);
+  --s-hair: 1px solid rgba(0,255,102,.22);
+  --s-border-sel: 1px solid #FF00E5;
+  --s-sel-bg: rgba(255,0,229,.10);
+  --s-r: 0px; --s-r-sm: 0px; --s-r-act: 0px;
+  --s-track: rgba(0,255,102,.18);
+  --s-warn: #FFE500; --s-done: #00FFF0;
+  --s-tag-fg: #00FFF0; --s-tag-bg: rgba(0,255,240,.12);
+  --s-tag2-fg: #FF00E5; --s-tag2-bg: rgba(255,0,229,.13);
+  --s-act-bg: transparent; --s-act-fg: #FF00E5;
+  --s-act-border: 1px solid #FF00E5;
+  --s-tabbg: #0A0F0A;
+  --s-font: "Share Tech Mono", ui-monospace, monospace;
+  --s-shadow: none;
+  --s-cta-shadow: 0 0 18px rgba(255,0,229,.45);
+}
+.s-cyber .hdr h3, .s-cyber .dl-t, .s-cyber .fmt-t, .s-cyber .meta .t {
+  text-shadow: 0 0 7px rgba(0,255,102,.5); letter-spacing: .02em;
+}
+.s-cyber .cta { text-shadow: none; }
+.s-cyber .scanlines {
+  position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: .28;
+  background: repeating-linear-gradient(to bottom, rgba(0,255,102,.13) 0 1px, transparent 1px 3px);
+  animation: scan 7s linear infinite;
+}
+@keyframes scan { from { background-position-y: 0; } to { background-position-y: 90px; } }
+
+/* ============================================================
+   SKIN 5 — Material You (MD3)
+   ============================================================ */
+.s-md3 {
+  --s-bg: #FEF7FF;
+  --s-fg: #1D1B20; --s-muted: #49454F;
+  --s-elev: #FFFFFF; --s-chip: #E8DEF8;
+  --s-accent: #6750A4; --s-on-accent: #FFFFFF;
+  --s-border: 1px solid #E7E0EC;
+  --s-hair: 1px solid #E7E0EC;
+  --s-border-sel: 1px solid #6750A4;
+  --s-sel-bg: #EADDFF;
+  --s-r: 14px; --s-r-sm: 9px; --s-r-cta: 100px; --s-r-act: 50%;
+  --s-track: #E7E0EC;
+  --s-warn: #825500; --s-done: #146B4A;
+  --s-tag-fg: #146B4A; --s-tag-bg: #CDEEDE;
+  --s-tag2-fg: #5B3E88; --s-tag2-bg: #EADDFF;
+  --s-act-bg: #EADDFF; --s-act-fg: #6750A4;
+  --s-tabbg: #F3EDF7;
+  --s-font: Roboto, system-ui, sans-serif;
+  --s-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+
+/* ============================================================
+   SKIN 6 — Claymorphism
+   ============================================================ */
+.s-clay {
+  --s-bg: #E9E6F7;
+  --s-fg: #4B4470; --s-muted: #9B95BE;
+  --s-elev: #EFEDFB; --s-chip: #E3DFF6;
+  --s-accent: #B9A6F0; --s-on-accent: #FFFFFF;
+  --s-border: none;
+  --s-hair: none;
+  --s-border-sel: 2px solid #C9BAF5;
+  --s-sel-bg: #E6DEFB;
+  --s-r: 26px; --s-r-sm: 17px; --s-r-cta: 26px;
+  --s-track: #DEDAF3;
+  --s-warn: #E8C07A; --s-done: #9FD8BC;
+  --s-tag-fg: #7FB89E; --s-tag-bg: #DEF0E7;
+  --s-tag2-fg: #A192D6; --s-tag2-bg: #E6DEFB;
+  --s-act-bg: #E6DEFB; --s-act-fg: #A192D6;
+  --s-tabbg: #E9E6F7;
+  --s-font: Nunito, system-ui, sans-serif;
+  --s-shadow: 6px 6px 13px rgba(157,148,201,.42), -5px -5px 12px rgba(255,255,255,.92);
+  --s-cta-shadow: 6px 6px 15px rgba(157,148,201,.5), -5px -5px 12px rgba(255,255,255,.9);
+}
+.s-clay .urlbar, .s-clay .card, .s-clay .fmt, .s-clay .dl { box-shadow: var(--s-shadow); }
+.s-clay .act { box-shadow: 3px 3px 7px rgba(157,148,201,.4), -3px -3px 7px rgba(255,255,255,.9); }
+.s-clay .iconbtn { box-shadow: 3px 3px 7px rgba(157,148,201,.35), -3px -3px 7px rgba(255,255,255,.9); }
+
+/* ---------- flaw annotation ---------- */
+.flaw {
+  margin: 22px 0 0; padding: 13px 17px;
+  background: var(--bad-bg); border-radius: 8px;
+  font-size: 14.5px; color: var(--ink-2); max-width: 70ch;
+}
+.flaw b { color: var(--bad); font-weight: 600; }
+.flaw code {
+  font-family: "JetBrains Mono", monospace; font-size: 12.5px;
+  background: rgba(128,128,128,.16); padding: 1px 5px; border-radius: 4px;
+}
+
+footer {
+  margin-top: 80px; padding-top: 28px; border-top: 2px solid var(--ink);
+  color: var(--ink-2); font-size: 15.5px; max-width: 70ch;
+}
+footer b { color: var(--ink); font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .fill.anim { width: 68%; }
+}
+@media (max-width: 700px) {
+  .wrap { padding: 0 16px 64px; }
+  .masthead { padding: 44px 0 30px; }
+  .frames { justify-content: center; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.5-1.5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></symbol>
+  <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 3v13"/><path d="M6 12l6 6 6-6"/><path d="M4 21h16"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4 12.5l5.5 5.5L20 6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></symbol>
+  <symbol id="i-cog" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M18.8 5.2l-2.1 2.1M7.3 16.7l-2.1 2.1"/></symbol>
+  <symbol id="i-sig" viewBox="0 0 24 24"><path d="M3 18h2M9 14h2M15 10h2M21 6h0.5" stroke-width="3"/></symbol>
+  <symbol id="i-bat" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="2.5"/><path d="M22 11v2" stroke-width="3"/></symbol>
+</svg>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Design direction · 6 candidates · 12 screens</p>
+    <h1>Downloader Style Specimens</h1>
+    <p class="standfirst">
+      The same two screens — <strong>paste → resolve</strong> and <strong>active downloads</strong> — rendered in
+      all six candidate directions. Identical content throughout, so the only variable is the
+      aesthetic. Formats and delivery tags come from the real backend: <strong>Direct</strong> streams
+      from the platform CDN, <strong>Server merge</strong> goes through ffmpeg.
+    </p>
+    <ul class="legend">
+      <li><span class="dot g"></span>Recommended</li>
+      <li><span class="dot w"></span>Viable</li>
+      <li><span class="dot b"></span>Advise against</li>
+    </ul>
+    <p class="note">
+      These are static HTML specimens, not React Native. They exist to settle the visual direction
+      before we write a single component. Colours are deliberately fixed per specimen — each is its
+      own world, so none of them follow your system theme.
+    </p>
+  </header>
+
+  <!-- 1 -->
+  <section class="spec">
+    <div class="spec-head">
+      <div>
+        <p class="spec-n">01</p>
+        <h2>Modern Dark — Cinema Mobile</h2>
+      </div>
+      <span class="verdict g">Recommended</span>
+    </div>
+    <p class="rationale">
+      Near-black rather than true black, hairline <b>rgba(255,255,255,.08)</b> borders, a single
+      restrained indigo accent, and two slow ambient blobs behind everything. Thumbnails sit on a
+      quiet ground, and the accent is spent in exactly one place — the primary action.
+      Scores React Native 10/10 and Expo 10/10; nothing here fights the framework.
+    </p>
+    <ul class="tokens">
+      <li><span class="sw" style="background:#050506"></span>#050506 bg</li>
+      <li><span class="sw" style="background:#0C0C10"></span>#0C0C10 elevated</li>
+      <li><span class="sw" style="background:#EDEDEF"></span>#EDEDEF text</li>
+      <li><span class="sw" style="background:#8A8F98"></span>#8A8F98 muted</li>
+      <li><span class="sw" style="background:#7C87E8"></span>#7C87E8 accent</li>
+      <li>radius 16 · Inter</li>
+    </ul>
+    <div class="frames">
+      <div class="frame-wrap">
+        <span class="frame-cap">Home · paste → resolve</span>
+        <div class="phone s-cinema" data-screen="home" data-blobs="1"></div>
+      </div>
+      <div class="frame-wrap">
+        <span class="frame-cap">Downloads · progress</span>
+        <div class="phone s-cinema" data-screen="dl" data-blobs="1"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="spec">
+    <div class="spec-head">
+      <div>
+        <p class="spec-n">02</p>
+        <h2>OLED Dark</h2>
+      </div>
+      <span class="verdict w">Viable</span>
+    </div>
+    <p class="rationale">
+      True <b>#000000</b> with #121212 cards and a single mint accent. Genuinely excellent for
+      battery and contrast, and the simplest of the six to build and maintain. The cost is character:
+      side by side with 01 it reads correct but anonymous — there is nothing here a user would
+      describe to a friend.
+    </p>
+    <ul class="tokens">
+      <li><span class="sw" style="background:#000000"></span>#000000 bg</li>
+      <li><span class="sw" style="background:#121212"></span>#121212 surface</li>
+      <li><span class="sw" style="background:#FFFFFF"></span>#FFFFFF text</li>
+      <li><span class="sw" style="background:#9AA0A6"></span>#9AA0A6 muted</li>
+      <li><span class="sw" style="background:#00E5A0"></span>#00E5A0 accent</li>
+      <li>radius 10 · Inter</li>
+    </ul>
+    <div class="frames">
+      <div class="frame-wrap">
+        <span class="frame-cap">Home · paste → resolve</span>
+        <div class="phone s-oled" data-screen="home"></div>
+      </div>
+      <div class="frame-wrap">
+        <span class="frame-cap">Downloads · progress</span>
+        <div class="phone s-oled" data-screen="dl"></div>
+      </div>
+    </div>
+    <p class="flaw">
+      <b>Watch:</b> pure <code>#000000</code> smears on OLED panels during fast scrolling. If you
+      pick this, lift the base to <code>#050505</code> and keep the neon accent — which is
+      essentially direction 01 with less atmosphere.
+    </p>
+  </section>
+
+  <!-- 3 -->
+  <section class="spec">
+    <div class="spec-head">
+      <div>
+        <p class="spec-n">03</p>
+        <h2>Glassmorphism</h2>
+      </div>
+      <span class="verdict w">Viable as accent</span>
+    </div>
+    <p class="rationale">
+      Frosted translucent panels over a saturated blurred ground. Genuinely striking on the hero
+      moment, and the format sheet is the perfect place for it. As a whole-app system it struggles:
+      text contrast shifts depending on which blob sits behind it, so a row that is legible at the
+      top of the list can fail near the bottom.
+    </p>
+    <ul class="tokens">
+      <li><span class="sw" style="background:#1B1140"></span>#1B1140 ground</li>
+      <li><span class="sw" style="background:#F0508A"></span>#F0508A blob</li>
+      <li><span class="sw" style="background:#3E7BFA"></span>#3E7BFA blob</li>
+      <li><span class="sw" style="background:#23C8A8"></span>#23C8A8 blob</li>
+      <li>surface rgba(255,255,255,.11)</li>
+      <li>blur 16 · radius 20</li>
+    </ul>
+    <div class="frames">
+      <div class="frame-wrap">
+        <span class="frame-cap">Home · paste → resolve</span>
+        <div class="phone s-glass" data-screen="home" data-glass="1"></div>
+      </div>
+      <div class="frame-wrap">
+        <span class="frame-cap">Downloads · progress</span>
+        <div class="phone s-glass" data-screen="dl" data-glass="1"></div>
+      </div>
+    </div>
+    <p class="flaw">
+      <b>Cost:</b> every blurred surface is a real GPU pass. Six <code>BlurView</code>s stacked over
+      a scrolling list is exactly where React Native drops frames — and this app scrolls a list
+      while animating progress bars. Use it for the header and format sheet, not the rows.
+    </p>
+  </section>
+
+  <!-- 4 -->
+  <section class="spec">
+    <div class="spec-head">
+      <div>
+        <p class="spec-n">04</p>
+        <h2>Cyberpunk / Neon Terminal</h2>
+      </div>
+      <span class="verdict b">Advise against</span>
+    </div>
+    <p class="rationale">
+      Matrix green on near-black, magenta accents, monospace throughout, scanline overlay. It is the
+      most immediately distinctive of the six and the most fun to build — and it is the one you will
+      regret. Monospace at 12px destroys scanning speed in a list, which is the screen users live in.
+    </p>
+    <ul class="tokens">
+      <li><span class="sw" style="background:#0D0D0D"></span>#0D0D0D bg</li>
+      <li><span class="sw" style="background:#00FF66"></span>#00FF66 text</li>
+      <li><span class="sw" style="background:#FF00E5"></span>#FF00E5 accent</li>
+      <li><span class="sw" style="background:#00FFF0"></span>#00FFF0 info</li>
+      <li>radius 0 · Share Tech Mono</li>
+    </ul>
+    <div class="frames">
+      <div class="frame-wrap">
+        <span class="frame-cap">Home · paste → resolve</span>
+        <div class="phone s-cyber" data-screen="home" data-scan="1"></div>
+      </div>
+      <div class="frame-wrap">
+        <span class="frame-cap">Downloads · progress</span>
+        <div class="phone s-cyber" data-screen="dl" data-scan="1"></div>
+      </div>
+    </div>
+    <p class="flaw">
+      <b>The real problem is not contrast.</b> <code>#00FF66</code> on <code>#0D0D0D</code> measures
+      about 14:1 — it passes AAA on paper. Saturated green on black causes halation: the glyph edges
+      bloom and the eye cannot settle, which is why terminals default to dimmed green. Add the
+      scanline overlay and you have a screen nobody reads for thirty seconds, let alone monitors a
+      download in.
+    </p>
+  </section>
+
+  <!-- 5 -->
+  <section class="spec">
+    <div class="spec-head">
+      <div>
+        <p class="spec-n">05</p>
+        <h2>Material You — MD3</h2>
+      </div>
+      <span class="verdict w">Safe</span>
+    </div>
+    <p class="rationale">
+      Real MD3 tokens: <b>#6750A4</b> primary, tonal <b>#EADDFF</b> containers, pill CTA, Roboto.
+      Native on Android, well documented, and free accessibility. But a media app in light mode
+      fights its own content — the thumbnails now shout against a near-white ground instead of
+      sitting in it, which is the opposite of what you want.
+    </p>
+    <ul class="tokens">
+      <li><span class="sw" style="background:#FEF7FF"></span>#FEF7FF surface</li>
+      <li><span class="sw" style="background:#6750A4"></span>#6750A4 primary</li>
+      <li><span class="sw" style="background:#EADDFF"></span>#EADDFF container</li>
+      <li><span class="sw" style="background:#1D1B20"></span>#1D1B20 text</li>
+      <li><span class="sw" style="background:#49454F"></span>#49454F muted</li>
+      <li>radius 14 / pill · Roboto</li>
+    </ul>
+    <div class="frames">
+      <div class="frame-wrap">
+        <span class="frame-cap">Home · paste → resolve</span>
+        <div class="phone s-md3" data-screen="home"></div>
+      </div>
+      <div class="frame-wrap">
+        <span class="frame-cap">Downloads · progress</span>
+        <div class="phone s-md3" data-screen="dl"></div>
+      </div>
+    </div>
+    <p class="flaw">
+      <b>Also:</b> this is the stock Material palette, so the app looks like every other Android
+      utility — and identical to a settings screen. It will never be the thing someone screenshots.
+    </p>
+  </section>
+
+  <!-- 6 -->
+  <section class="spec">
+    <div class="spec-head">
+      <div>
+        <p class="spec-n">06</p>
+        <h2>Claymorphism</h2>
+      </div>
+      <span class="verdict b">Advise against</span>
+    </div>
+    <p class="rationale">
+      Soft pastel ground, puffy dual shadows, oversized 26px radii, chunky Nunito. Warm and friendly
+      in isolation. The trouble shows up at exactly the density this app needs: every card carries
+      two large shadows, so four download rows produce eight overlapping blurs and the list turns to
+      mush.
+    </p>
+    <ul class="tokens">
+      <li><span class="sw" style="background:#E9E6F7"></span>#E9E6F7 ground</li>
+      <li><span class="sw" style="background:#EFEDFB"></span>#EFEDFB surface</li>
+      <li><span class="sw" style="background:#4B4470"></span>#4B4470 text</li>
+      <li><span class="sw" style="background:#9B95BE"></span>#9B95BE muted</li>
+      <li><span class="sw" style="background:#B9A6F0"></span>#B9A6F0 accent</li>
+      <li>radius 26 · Nunito</li>
+    </ul>
+    <div class="frames">
+      <div class="frame-wrap">
+        <span class="frame-cap">Home · paste → resolve</span>
+        <div class="phone s-clay" data-screen="home"></div>
+      </div>
+      <div class="frame-wrap">
+        <span class="frame-cap">Downloads · progress</span>
+        <div class="phone s-clay" data-screen="dl"></div>
+      </div>
+    </div>
+    <p class="flaw">
+      <b>Measured failure:</b> muted text <code>#9B95BE</code> on <code>#EFEDFB</code> is roughly
+      <b>2.3:1</b> — well under the 4.5:1 minimum. Every file size, speed readout and status line on
+      these screens is unreadable, and darkening the text far enough to pass breaks the soft look
+      that motivates the style in the first place.
+    </p>
+  </section>
+
+  <footer>
+    <p>
+      Seeing them together makes the case better than the table did: <b>01 Modern Dark</b> is the one
+      to build. It gives the thumbnails a quiet ground, spends its accent once, and its ambient
+      motion is cheap enough to run alongside animated progress bars. Borrow the frosted header from
+      <b>03</b>, and keep <b>05</b> in reserve if Android-native feel ever matters more than identity.
+    </p>
+  </footer>
+</div>
+
+<script>
+/* Both screens are rendered from one template per screen, so all six
+   specimens carry byte-identical content and the only variable is the skin. */
+const svg = (id, cls) => `<svg class="ic ${cls || ''}"><use href="#i-${id}"/></svg>`;
+
+const statusbar = `
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="sb-r">${svg('sig')}${svg('bat')}</span>
+  </div>`;
+
+const tabs = (active) => `
+  <nav class="tabs">
+    <div class="tab ${active === 'home' ? 'on' : ''}">${svg('home')}<span>Home</span></div>
+    <div class="tab ${active === 'dl' ? 'on' : ''}">${svg('list')}<span>Downloads</span></div>
+    <div class="tab">${svg('cog')}<span>Settings</span></div>
+  </nav>`;
+
+const fmt = (sel, title, sub, tag, tagCls, size) => `
+  <div class="fmt ${sel ? 'sel' : ''}">
+    <div class="radio"></div>
+    <div class="fmt-main">
+      <div class="fmt-t">${title}</div>
+      <div class="fmt-s">${sub}</div>
+    </div>
+    <span class="tag ${tagCls}">${tag}</span>
+    <span class="size">${size}</span>
+  </div>`;
+
+const SCREENS = {
+  home: `
+    ${statusbar}
+    <div class="hdr">
+      <h3>Downloader</h3>
+      <div class="iconbtn">${svg('cog')}</div>
+    </div>
+    <div class="body">
+      <div class="urlbar">
+        ${svg('link')}
+        <span class="url">instagram.com/reel/C8xK2mQp4Rd</span>
+        <span class="pastebtn">Paste</span>
+      </div>
+
+      <div class="card">
+        <div class="thumb">
+          <span class="play">${svg('play', 'solid')}</span>
+          <span class="dur">2:14</span>
+        </div>
+        <div class="meta">
+          <div class="t">Sunset timelapse over Karachi harbour</div>
+          <div class="s">@nadia.films · Instagram</div>
+        </div>
+      </div>
+
+      <div class="lbl">Choose format</div>
+      <div class="fmts">
+        ${fmt(true,  '1080p60 · MP4', 'Video + audio merged', 'Server merge', 'srv', '42.8 MB')}
+        ${fmt(false, '720p · MP4',    'Single stream',        'Direct',       '',    '18.1 MB')}
+        ${fmt(false, 'Audio · M4A',   '128 kbps',             'Direct',       '',    '3.4 MB')}
+        ${fmt(false, 'Audio · MP3',   '320 kbps transcode',   'Server merge', 'srv', '8.2 MB')}
+      </div>
+
+      <div class="cta">${svg('dl')} Download</div>
+    </div>
+    ${tabs('home')}`,
+
+  dl: `
+    ${statusbar}
+    <div class="hdr">
+      <div>
+        <h3>Downloads</h3>
+        <div class="sub">1 active · 1 paused</div>
+      </div>
+      <div class="iconbtn">${svg('cog')}</div>
+    </div>
+    <div class="body">
+      <div class="dls">
+
+        <div class="dl">
+          <div class="thumb"><span class="dur">2:14</span></div>
+          <div class="dl-main">
+            <div class="dl-t">Sunset timelapse over Karachi</div>
+            <div class="dl-s">1080p60 · MP4 · Server merge</div>
+            <div class="bar"><div class="fill anim" style="width:68%"></div></div>
+            <div class="dl-s">29.1 MB of 42.8 MB · 2.4 MB/s</div>
+          </div>
+          <div class="act">${svg('pause', 'solid')}</div>
+        </div>
+
+        <div class="dl b2">
+          <div class="thumb"><span class="dur">0:48</span></div>
+          <div class="dl-main">
+            <div class="dl-t">Old city rooftops, golden hour</div>
+            <div class="dl-s">720p · MP4 · Direct</div>
+            <div class="bar"><div class="fill warnc" style="width:42%"></div></div>
+            <div class="dl-s">Paused · resumes from 18.0 MB</div>
+          </div>
+          <div class="act">${svg('play', 'solid')}</div>
+        </div>
+
+        <div class="dl b3">
+          <div class="thumb"><span class="dur">3:52</span></div>
+          <div class="dl-main">
+            <div class="dl-t">Coke Studio · Pasoori (audio)</div>
+            <div class="dl-s">MP3 · 320 kbps</div>
+            <div class="bar"><div class="fill donec" style="width:100%"></div></div>
+            <div class="dl-s">Saved to Gallery · 8.2 MB</div>
+          </div>
+          <div class="act ok">${svg('check')}</div>
+        </div>
+
+        <div class="dl b4">
+          <div class="thumb"><span class="dur">1:06</span></div>
+          <div class="dl-main">
+            <div class="dl-t">Street food tour, Burns Road</div>
+            <div class="dl-s">1080p · MP4 · Server merge</div>
+            <div class="bar"><div class="fill" style="width:0%"></div></div>
+            <div class="dl-s">Queued · waiting for a slot</div>
+          </div>
+          <div class="act ghost">${svg('clock')}</div>
+        </div>
+
+      </div>
+    </div>
+    ${tabs('dl')}`
+};
+
+document.querySelectorAll('.phone').forEach((el) => {
+  let inner = '';
+  if (el.dataset.glass) inner += '<div class="gbg"><i></i><i></i><i></i></div>';
+  if (el.dataset.blobs) inner += '<div class="blob b-a"></div><div class="blob b-b"></div>';
+  inner += `<div class="scr">${SCREENS[el.dataset.screen]}</div>`;
+  if (el.dataset.scan) inner += '<div class="scanlines"></div>';
+  el.innerHTML = inner;
+});
+</script>
