@@ -13,6 +13,7 @@ Native Android app).
 | [05-entry-points.md](05-entry-points.md) | How a link gets into the app: share sheet, QS tile, clipboard |
 | [06-design-system.md](06-design-system.md) | Soft Neumorphic direction + a contrast audit that needs a decision |
 | [07-roadmap.md](07-roadmap.md) | Build order and the decision log |
+| [08-running-and-testing.md](08-running-and-testing.md) | **How to run it, which commands, and every failure we hit** |
 
 Code lives in [`../backend`](../backend/README.md) (API) and
 [`../mobile`](../mobile/README.md) (Android app).

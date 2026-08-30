@@ -78,6 +78,10 @@ adb reverse tcp:8000 tcp:8000 && adb reverse tcp:8081 tcp:8081
 # then use http://127.0.0.1:8000 in both .env files
 ```
 
+**[docs/08-running-and-testing.md](docs/08-running-and-testing.md)** covers the
+full workflow: when a native rebuild is actually needed, the manual test pass,
+and fixes for every build failure we have hit.
+
 ---
 
 ## How it works
