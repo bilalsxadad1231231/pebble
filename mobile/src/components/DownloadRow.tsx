@@ -72,7 +72,16 @@ export function DownloadRow({
         </View>
 
         <View style={styles.actions}>
-          {done ? (
+          {done && record.galleryError ? (
+            <Action
+              icon="download"
+              label={`Add ${record.title} to gallery`}
+              onPress={() => {
+                void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                void downloads.publishToGallery(record.id);
+              }}
+            />
+          ) : done ? (
             <Action
               icon="play"
               label={`Play ${record.title}`}
@@ -189,6 +198,9 @@ function detailLine(record: DownloadRecord): string {
       break;
     case 'completed':
       parts.push(formatBytes(record.totalBytes));
+      // Say plainly where the file actually is - "saved" is meaningless if it
+      // cannot be found outside the app.
+      parts.push(record.galleryAssetId ? 'In gallery' : record.galleryError ? 'App only' : 'Saving…');
       break;
     case 'failed':
       parts.push(record.error ?? 'Failed');

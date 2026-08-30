@@ -30,6 +30,13 @@
           "resizeMode": "contain",
           "backgroundColor": "#E7E9EE"
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "savePhotosPermission": "Allow Pebble to save downloads to your gallery.",
+          "isAccessMediaLocationEnabled": false
+        }
       ]
     ],
     "scheme": "pebble",

@@ -48,6 +48,14 @@ export type DownloadRecord = {
   createdAt: number;
   completedAt?: number;
 
+  /**
+   * Asset id once published to the device gallery (a `content://` uri on
+   * Android). Until this is set the file is only reachable inside the app.
+   */
+  galleryAssetId?: string;
+  /** Set when publishing failed, so the Library can offer to retry it. */
+  galleryError?: string;
+
   /** Tier 1 provenance, so the Library can show what was actually asked for. */
   clip?: ClipRange | null;
   targetSizeMb?: number | null;

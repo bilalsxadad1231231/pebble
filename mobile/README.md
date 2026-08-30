@@ -99,6 +99,17 @@ onto the fresh url.
 | Fit to size | `SizeBudget` on Home | Presets; impossible budgets are disabled, not left to fail |
 | Audio tags + cover art | Toggle on Home | Defaults on; turning it off keeps the faster direct path |
 
+## Gallery
+
+A finished download is copied into the device gallery under a **Pebble** album,
+so it is reachable from the Gallery, music players and other apps' file pickers.
+Until that happens the file lives only in app-private storage, which is why the
+Library row says `In gallery`, `Saving…` or `App only` rather than just "saved".
+
+Permission is requested on the first completed download using Android 13+
+granular grants (`photo`, `video`, `audio`). If it is denied the file is kept and
+the row offers a retry — the transfer is never lost to a permission prompt.
+
 The size presets mirror the backend's guard rails so a budget that would 422 is
 never offered. `__tests__/logic.test.ts` locks that mirror to the backend's own
 numbers — a 13 MB floor at 300 s, 2,405,333 bps for the worked example — because
@@ -110,5 +121,4 @@ server.
 - Share intent, quick settings tile, clipboard-on-foreground
   (see `../docs/05-entry-points.md`)
 - Foreground service, so downloads survive backgrounding
-- Saving to the gallery via `MediaStore` — files currently land in app storage
 - Playback; Library rows open the progress screen rather than a player

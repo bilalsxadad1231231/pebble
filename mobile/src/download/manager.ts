@@ -9,6 +9,7 @@ import {
 
 import { api, ApiError, pollJob } from '../api/client';
 import type { DownloadTicket, MediaKind, PrepareRequest } from '../api/types';
+import { GalleryPermissionError, publish } from './gallery';
 import type { DownloadListener, DownloadRecord, DownloadStatus } from './types';
 
 const STORE_KEY = 'pebble.downloads.v1';
@@ -287,7 +288,33 @@ class DownloadManager {
       bytesWritten: file.size ?? this.records.get(id)?.bytesWritten ?? 0,
       totalBytes: file.size ?? this.records.get(id)?.totalBytes ?? null,
     });
+    // The transfer is done either way; publishing is a separate step that may
+    // fail on its own (permission denied) without losing the file.
+    void this.publishToGallery(id);
     this.pumpQueue();
+  }
+
+  /**
+   * Copy a finished download into the device gallery.
+   *
+   * Until this runs the file lives in app-private storage, invisible to the
+   * Gallery, music players and other apps' file pickers.
+   */
+  async publishToGallery(id: string): Promise<void> {
+    const record = this.records.get(id);
+    if (!record || record.galleryAssetId || !record.fileUri) return;
+
+    try {
+      const assetId = await publish(record.fileUri);
+      this.patch(id, { galleryAssetId: assetId, galleryError: undefined });
+    } catch (cause) {
+      this.patch(id, {
+        galleryError:
+          cause instanceof GalleryPermissionError
+            ? cause.message
+            : `Could not add to gallery: ${String((cause as Error)?.message ?? cause)}`,
+      });
+    }
   }
 
   private fail(id: string, cause: unknown): void {
