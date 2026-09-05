@@ -20,6 +20,7 @@ import { PasteInput } from '../../src/components/PasteInput';
 import { Screen, ScreenHeader, SectionLabel } from '../../src/components/Screen';
 import { SizeBudget } from '../../src/components/SizeBudget';
 import { downloads } from '../../src/download/manager';
+import * as inbound from '../../src/links/inbound';
 import { colors, fonts, fontSizes, radii, spacing } from '../../src/theme/neumorphic';
 import { bestAudio, qualityLadder } from '../../src/utils/formats';
 import { extractUrl, isSupported } from '../../src/utils/url';
@@ -105,17 +106,39 @@ export default function HomeScreen() {
     }
   }, []);
 
+  // Every entry point - share sheet, quick-settings tile, launcher shortcut,
+  // clipboard - lands here. A link that arrived before this screen mounted is
+  // claimed on the first render, since a share intent can launch the app.
+  useEffect(() => {
+    const open = (link: inbound.InboundLink) => {
+      inbound.markHandled(link.url);
+      setUrl(link.url);
+      void resolve(link.url);
+    };
+
+    const waiting = inbound.claimPending();
+    if (waiting) open(waiting);
+    return inbound.subscribe(open);
+  }, [resolve]);
+
   const onPaste = useCallback(async () => {
     // Reading the clipboard fires a system toast on Android 12+, so it only
     // happens on an explicit tap - never silently in the background.
     const text = await Clipboard.getStringAsync();
+
+    // Pasting is forgiving where the other entry points are strict: an
+    // unrecognised host still fills the field, because the backend supports
+    // more sites than the client-side list names.
     const found = extractUrl(text);
     if (!found) {
       setError('No link found on the clipboard.');
       return;
     }
     setUrl(found);
-    if (isSupported(found)) void resolve(found);
+    if (isSupported(found)) {
+      inbound.markHandled(found);
+      void resolve(found);
+    }
   }, [resolve]);
 
   const onDownload = useCallback(() => {
@@ -144,6 +167,7 @@ export default function HomeScreen() {
       },
     );
 
+    inbound.markHandled(media.source_url);
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push('/library');
   }, [media, selected, clip, budgetMb, embedMetadata, audioFormat, router]);

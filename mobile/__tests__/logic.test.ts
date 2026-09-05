@@ -1,6 +1,7 @@
 import { bestAudio, qualityLadder } from '../src/utils/formats';
 import { dayBucket, formatBytes, formatDuration } from '../src/utils/format';
 import { extractUrl, isSupported, platformOf, prettyUrl } from '../src/utils/url';
+import * as inbound from '../src/links/inbound';
 
 /**
  * The app mirrors the backend's fit-to-size guard rails so an impossible budget
@@ -159,5 +160,66 @@ describe('quality ladder', () => {
 
   it('returns null when a source has no audio stream', () => {
     expect(bestAudio(yt.filter((f) => f.kind === 'video'), 600)).toBeNull();
+  });
+});
+
+// --- Inbound links -----------------------------------------------------------
+
+describe('inbound links', () => {
+  beforeEach(() => inbound.reset());
+
+  it('accepts a bare supported url', () => {
+    const result = inbound.offer('https://youtu.be/abc123', 'share');
+    expect(result.accepted).toBe(true);
+    if (result.accepted) expect(result.link.url).toBe('https://youtu.be/abc123');
+  });
+
+  it('pulls the url out of shared text that carries a caption', () => {
+    const result = inbound.offer(
+      'Check this out https://www.instagram.com/reel/xyz/ so good',
+      'share',
+    );
+    expect(result.accepted).toBe(true);
+    if (result.accepted) expect(result.link.url).toBe('https://www.instagram.com/reel/xyz/');
+  });
+
+  it.each([
+    ['', 'empty'],
+    ['   ', 'empty'],
+    ['just some copied words', 'no-url'],
+    ['https://example.com/video', 'unsupported'],
+  ])('rejects %j as %s', (raw, reason) => {
+    const result = inbound.offer(raw, 'clipboard');
+    expect(result).toEqual({ accepted: false, reason });
+  });
+
+  it('notifies subscribers and holds the link for a cold start', () => {
+    const seen: string[] = [];
+    inbound.subscribe((link) => seen.push(link.url));
+
+    inbound.offer('https://youtu.be/abc123', 'tile');
+
+    expect(seen).toEqual(['https://youtu.be/abc123']);
+    expect(inbound.claimPending()?.url).toBe('https://youtu.be/abc123');
+    // Claiming clears it, so a remount does not reopen the same link.
+    expect(inbound.claimPending()).toBeNull();
+  });
+
+  it('stops notifying after unsubscribe', () => {
+    const seen: string[] = [];
+    const off = inbound.subscribe((link) => seen.push(link.url));
+    off();
+    inbound.offer('https://youtu.be/abc123', 'share');
+    expect(seen).toEqual([]);
+  });
+
+  it('remembers handled urls and forgets the oldest past the cap', () => {
+    inbound.markHandled('https://youtu.be/keep');
+    expect(inbound.wasHandled('https://youtu.be/keep')).toBe(true);
+    expect(inbound.wasHandled('https://youtu.be/other')).toBe(false);
+
+    for (let i = 0; i < 60; i += 1) inbound.markHandled(`https://youtu.be/v${i}`);
+    expect(inbound.wasHandled('https://youtu.be/keep')).toBe(false);
+    expect(inbound.wasHandled('https://youtu.be/v59')).toBe(true);
   });
 });
