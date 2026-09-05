@@ -138,7 +138,7 @@ each force server-side delivery. See [backend/README.md](backend/README.md).
 
 ```bash
 cd backend && ../.venv/Scripts/python -m pytest -q   # 79 tests
-cd mobile  && npm test && npm run typecheck          # 26 tests
+cd mobile  && npm test && npm run typecheck          # 41 tests
 ```
 
 Backend tests mock the network and cover the delivery rule, range arithmetic,
@@ -166,8 +166,8 @@ Roadmap and the reasoning behind each decision live in
 
 ## Known limits
 
-- The job store is in-memory and process-local; multiple workers need Redis plus
-  a shared volume.
+- The **backend's** job store is in-memory and process-local; multiple workers
+  need Redis plus a shared volume. The app's own library is SQLite and durable.
 - No auth or rate limiting — **do not expose the backend publicly as-is**.
 - Private and age-gated posts need cookies passed to yt-dlp; not wired up.
 - Gallery save, background downloads, the share sheet, the quick-settings tile

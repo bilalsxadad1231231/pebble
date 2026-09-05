@@ -139,7 +139,7 @@ cd backend
 
 cd ..\mobile
 npm run typecheck                              # tsc --noEmit
-npm test                                       # 26 tests
+npm test                                       # 41 tests
 npx expo-doctor                                # 21 config/dependency checks
 npx expo export --platform android             # proves the bundle builds
 ```
@@ -147,12 +147,11 @@ npx expo export --platform android             # proves the bundle builds
 `expo-doctor` will **not** catch a transitive native version conflict — see
 Troubleshooting. A green doctor run is not proof the native build works.
 
-**Known: doctor reports 20/21.** Five Expo packages sit one patch version
-behind what the SDK now expects. `npx expo install --fix` cannot apply them:
-`react-dom@19.2.8` demands `react ^19.2.8` while the project is on `19.2.3`, so
-npm refuses to resolve. Forcing it with `--legacy-peer-deps` is what caused the
-`executeSync` build failure below, so the drift is left alone deliberately.
-Revisit when react itself is bumped.
+**If npm refuses to install anything**, with an ERESOLVE naming `react-dom`:
+`react-dom` is pinned to `19.2.3` in `package.json` to match `react`, because a
+transitive `react-dom@19.2.8` peer-requires a newer react than the SDK uses.
+Keep that pin. Reaching for `--legacy-peer-deps` instead is what caused the
+`executeSync` build failure below.
 
 To verify only the native module compiles, without a full app build:
 
@@ -181,6 +180,16 @@ cd android
 - [ ] Size presets below the floor are disabled; trimming shorter unlocks them
 - [ ] A file with a size budget lands under it
 - [ ] MP3 with tagging on lands in a music player with title, artist and artwork
+
+### Storage
+
+- [ ] After a download completes and reads **In gallery**, the staging copy is
+      gone - `adb shell 'run-as com.pebble.downloader ls files/Pebble'` is empty
+- [ ] The file is in a **Pebble** album, once, not twice
+- [ ] **Delete** removes it from the gallery too, after Android's own prompt
+- [ ] Downloads survive a force-stop and reopen (they live in SQLite now)
+- [ ] An install upgraded from an older build keeps its existing library - the
+      AsyncStorage records migrate on first launch
 
 ### Downloads
 

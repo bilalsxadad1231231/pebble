@@ -154,9 +154,15 @@ another app, which forgets where you were.
 
 ### Implementation notes
 
-Cheap to build once the Library has a local database. The tricky part is that a
-Tier 1 clip of a video is *not* a duplicate of the full video, so clip bounds
-have to be part of the key.
+**The database now exists** (`src/download/store.ts`, SQLite). Records carry
+`sourceUrl` and `formatId`, and `store.findExisting()` already does the lookup,
+keyed on `(source_url, format_id, clip_start, clip_end)` with an index behind
+it. Note the query uses `IS` rather than `=` for the clip bounds: `= NULL` is
+never true in SQL, which would make every un-clipped download look unique.
+
+What remains is the UI - showing *"Already downloaded"* with a jump-to-file
+action instead of a download button - and deciding what to do when the existing
+copy has since been deleted from the gallery.
 
 ---
 
@@ -172,8 +178,14 @@ have to be part of the key.
 
 ### Implementation notes
 
-Depends on the player (item 5) for "never opened" to mean anything. Until then it
-can only report size and age, which is weaker but still useful.
+`store.usage()` returns count, total bytes and a never-opened count today, and
+`lastOpenedAt` is recorded whenever a download is handed to another app - so
+"never opened" already means something without waiting for an in-app player.
+It undercounts by design: a file opened from the gallery rather than from
+Pebble is invisible to us, and there is no honest way around that.
+
+What remains is the screen itself: sort by size, age or never-played, and
+multi-select delete with an undo window.
 
 ---
 
@@ -184,10 +196,13 @@ Wi-Fi queue ──────────────> independent, ship first
 Vault ────────────────────> independent
 Subtitles ────────────────> independent (backend)
 Smart naming ─────────────> independent
-Player ───────────────────> unlocks:
-                             ├─ Duplicate detection (needs local DB)
-                             └─ Storage reclaim (needs play history)
+Duplicate detection ──────> unblocked: schema + query exist, UI remains
+Storage reclaim ──────────> unblocked: usage() + lastOpenedAt exist, UI remains
+Player ───────────────────> independent
 ```
 
-The player is the keystone. Everything after it in the list gets cheaper once it
-exists, so it should not be scheduled last despite being the largest single item.
+This originally read "the player is the keystone", because duplicate detection
+needed a local database and storage reclaim needed play history. Moving the
+library to SQLite settled both, and recording opens at the point a file is
+handed to another app covers the second without an in-app player. Nothing in
+Tier 2 now blocks on anything else in Tier 2.
