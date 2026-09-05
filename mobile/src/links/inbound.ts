@@ -48,19 +48,32 @@ const handled = new Set<string>();
 const HANDLED_LIMIT = 50;
 
 /**
+ * The url, or why this string cannot become one. One rule, two callers.
+ *
+ * Tagged rather than returning `string | RejectionReason`, because both arms of
+ * that union are strings and nothing at the call site can tell them apart.
+ */
+function validate(
+  raw: string | null | undefined,
+): { ok: true; url: string } | { ok: false; reason: RejectionReason } {
+  if (!raw || !raw.trim()) return { ok: false, reason: 'empty' };
+  const url = extractUrl(raw) ?? (raw.trim().startsWith('http') ? raw.trim() : null);
+  if (!url) return { ok: false, reason: 'no-url' };
+  if (!isSupported(url)) return { ok: false, reason: 'unsupported' };
+  return { ok: true, url };
+}
+
+/**
  * Validate a raw string and, if it holds a supported link, broadcast it.
  *
  * Returns why it was rejected rather than throwing, because the tile and the
  * shortcut need to show a toast and exit rather than surface an error screen.
  */
 export function offer(raw: string | null | undefined, source: EntrySource): OfferResult {
-  if (!raw || !raw.trim()) return { accepted: false, reason: 'empty' };
+  const checked = validate(raw);
+  if (!checked.ok) return { accepted: false, reason: checked.reason };
 
-  const url = extractUrl(raw) ?? (raw.trim().startsWith('http') ? raw.trim() : null);
-  if (!url) return { accepted: false, reason: 'no-url' };
-  if (!isSupported(url)) return { accepted: false, reason: 'unsupported' };
-
-  const link: InboundLink = { url, source, at: Date.now() };
+  const link: InboundLink = { url: checked.url, source, at: Date.now() };
   pending = link;
   listeners.forEach((listener) => listener(link));
   return { accepted: true, link };
@@ -97,6 +110,18 @@ export function markHandled(url: string): void {
 
 export function wasHandled(url: string): boolean {
   return handled.has(url);
+}
+
+/**
+ * The validation half of `offer`, without the broadcast.
+ *
+ * The clipboard needs to know whether a string *could* be offered before it
+ * shows anything, since reading the clipboard and then silently doing nothing
+ * leaves the Android 12 paste toast unexplained.
+ */
+export function offerable(raw: string | null | undefined): string | null {
+  const checked = validate(raw);
+  return checked.ok ? checked.url : null;
 }
 
 /** Test seam. */

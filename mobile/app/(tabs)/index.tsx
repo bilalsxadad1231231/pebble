@@ -11,6 +11,7 @@ import { useRouter } from 'expo-router';
 
 import { api, ApiError } from '../../src/api/client';
 import type { ClipRange, FormatOption, MediaInfo } from '../../src/api/types';
+import { ClipboardOffer } from '../../src/components/ClipboardOffer';
 import { ClipScrubber } from '../../src/components/ClipScrubber';
 import { FormatRow } from '../../src/components/FormatRow';
 import { Icon } from '../../src/components/Icon';
@@ -21,6 +22,7 @@ import { Screen, ScreenHeader, SectionLabel } from '../../src/components/Screen'
 import { SizeBudget } from '../../src/components/SizeBudget';
 import { downloads } from '../../src/download/manager';
 import * as inbound from '../../src/links/inbound';
+import { useClipboardOffer } from '../../src/links/useClipboardOffer';
 import { colors, fonts, fontSizes, radii, spacing } from '../../src/theme/neumorphic';
 import { bestAudio, qualityLadder } from '../../src/utils/formats';
 import { extractUrl, isSupported } from '../../src/utils/url';
@@ -52,6 +54,8 @@ export default function HomeScreen() {
   const [budgetMb, setBudgetMb] = useState<number | null>(null);
   const [embedMetadata, setEmbedMetadata] = useState(true);
   const [audioFormat, setAudioFormat] = useState<'mp3' | 'm4a'>('mp3');
+
+  const clipboardOffer = useClipboardOffer();
 
   const selected = formats.find((f) => f.id === selectedId) ?? null;
 
@@ -194,6 +198,14 @@ export default function HomeScreen() {
           onSubmit={() => resolve(url)}
           editable={!resolving}
         />
+
+        {clipboardOffer.url && !media && !resolving ? (
+          <ClipboardOffer
+            url={clipboardOffer.url}
+            onAccept={clipboardOffer.accept}
+            onDismiss={clipboardOffer.dismiss}
+          />
+        ) : null}
 
         {!media && !resolving ? (
           <View style={styles.chipRow}>
