@@ -42,5 +42,12 @@
     "typecheck": "tsc --noEmit",
     "test": "jest"
   },
-  "private": true
+  "private": true,
+  "expo": {
+    "autolinking": {
+      "exclude": [
+        "react-native-gesture-handler"
+      ]
+    }
+  }
 }
