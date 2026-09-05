@@ -22,19 +22,34 @@ object FileOpener {
   private const val AUTHORITY_SUFFIX = ".FileSystemFileProvider"
 
   fun open(context: Context, rawUri: String): Boolean {
-    val file = File(Uri.parse(rawUri).path ?: return false)
-    if (!file.exists()) return false
+    val parsed = Uri.parse(rawUri)
 
-    val content = FileProvider.getUriForFile(
-      context,
-      context.packageName + AUTHORITY_SUFFIX,
-      file,
-    )
+    // A published download is addressed by its MediaStore content:// uri,
+    // which is already viewable - re-wrapping it in a FileProvider would be
+    // both wrong and impossible, since the file is not under our roots.
+    val isContent = parsed.scheme == "content"
+
+    val data: Uri
+    val mime: String
+
+    if (isContent) {
+      data = parsed
+      mime = context.contentResolver.getType(parsed) ?: "*/*"
+    } else {
+      val file = File(parsed.path ?: return false)
+      if (!file.exists()) return false
+      data = FileProvider.getUriForFile(
+        context,
+        context.packageName + AUTHORITY_SUFFIX,
+        file,
+      )
+      mime = mimeOf(file)
+    }
 
     val intent = Intent(Intent.ACTION_VIEW).apply {
       // Without a type the chooser has nothing to match on and Android offers
       // the user nothing at all.
-      setDataAndType(content, mimeOf(file))
+      setDataAndType(data, mime)
       addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
       addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }

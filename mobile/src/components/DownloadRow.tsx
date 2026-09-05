@@ -84,7 +84,7 @@ export function DownloadRow({
               label={`Play ${record.title}`}
               onPress={() => {
                 void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                void openDownload(record.fileUri);
+                void openDownload(record);
               }}
             />
           ) : failed ? (

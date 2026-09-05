@@ -24,7 +24,12 @@ export type DownloadRecord = {
 
   filename: string;
   mimeType: string;
-  fileUri: string;
+  /**
+   * The staging file in app-private storage. Cleared once the download has
+   * been published to the gallery, which is a copy - keeping both would cost
+   * the user twice the space for every download.
+   */
+  fileUri?: string;
 
   /** The durable handle. Survives url expiry. Empty until prepare returns. */
   refreshToken: string;

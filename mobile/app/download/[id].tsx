@@ -169,7 +169,7 @@ export default function DownloadScreen() {
           {done && record ? (
             <NeuPressable
               radius={radii.xl}
-              onPress={() => void openDownload(record.fileUri)}
+              onPress={() => void openDownload(record)}
               accessibilityLabel={`Open ${record.title}`}
               style={styles.action}
             >

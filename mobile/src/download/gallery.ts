@@ -105,3 +105,19 @@ export async function publish(fileUri: string): Promise<string> {
 
   return asset.id;
 }
+
+/**
+ * Remove a published asset from the device's media store.
+ *
+ * Needed because the gallery copy is the *only* copy once a download has been
+ * published - the staging file in app storage is deleted at that point - so
+ * deleting a download that skipped this would delete nothing at all.
+ *
+ * On Android 11+ the system shows its own confirmation dialog before removing
+ * anything from shared storage; that prompt is the platform's, not ours.
+ */
+export async function unpublish(assetId: string): Promise<void> {
+  const lib = mediaLibrary();
+  if (!lib) throw new GalleryUnavailableError();
+  await new lib.Asset(assetId).delete();
+}

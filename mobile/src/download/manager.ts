@@ -9,7 +9,7 @@ import {
 
 import { api, ApiError, pollJob } from '../api/client';
 import type { DownloadTicket, MediaKind, PrepareRequest } from '../api/types';
-import { GalleryPermissionError, GalleryUnavailableError, publish } from './gallery';
+import { GalleryPermissionError, GalleryUnavailableError, publish, unpublish } from './gallery';
 import { syncForegroundService } from './service';
 import type { DownloadListener, DownloadRecord, DownloadStatus } from './types';
 
@@ -297,6 +297,13 @@ class DownloadManager {
     const record = this.records.get(id);
     if (!record) return;
 
+    // No staging file means this record was already published and its sandbox
+    // copy released, so there is nothing here to transfer into.
+    if (!record.fileUri) {
+      this.fail(id, new Error('This download has already been saved.'));
+      return;
+    }
+
     this.patch(id, { status: 'downloading', error: undefined });
 
     const task = File.createDownloadTask(
@@ -331,10 +338,16 @@ class DownloadManager {
   }
 
   /**
-   * Copy a finished download into the device gallery.
+   * Move a finished download into the device gallery.
    *
    * Until this runs the file lives in app-private storage, invisible to the
    * Gallery, music players and other apps' file pickers.
+   *
+   * Scoped storage means the file cannot be written there directly - a
+   * download can only land in the app sandbox, and MediaStore *copies* it out.
+   * So the sandbox file is a staging area, and it is deleted once the copy
+   * exists. Keeping both would silently cost the user twice the disk space for
+   * every download, and leave Delete freeing only half of it.
    */
   async publishToGallery(id: string): Promise<void> {
     const record = this.records.get(id);
@@ -342,7 +355,23 @@ class DownloadManager {
 
     try {
       const assetId = await publish(record.fileUri);
-      this.patch(id, { galleryAssetId: assetId, galleryError: undefined });
+
+      // Drop the staging copy now that the gallery owns the bytes. Failing to
+      // delete it is not worth surfacing - the download succeeded either way.
+      let stagedRemoved = false;
+      try {
+        const staged = new File(record.fileUri);
+        if (staged.exists) staged.delete();
+        stagedRemoved = true;
+      } catch {
+        stagedRemoved = false;
+      }
+
+      this.patch(id, {
+        galleryAssetId: assetId,
+        galleryError: undefined,
+        ...(stagedRemoved ? { fileUri: undefined } : {}),
+      });
     } catch (cause) {
       const reason =
         cause instanceof GalleryPermissionError || cause instanceof GalleryUnavailableError
@@ -433,8 +462,10 @@ class DownloadManager {
 
     if (restart) {
       // Different bytes behind the same request - the partial file is useless.
-      const partial = new File(record.fileUri);
-      if (partial.exists) partial.delete();
+      if (record.fileUri) {
+        const partial = new File(record.fileUri);
+        if (partial.exists) partial.delete();
+      }
       this.pauseStates.delete(id);
       this.patch(id, { bytesWritten: 0 });
       await this.begin(id);
@@ -483,12 +514,29 @@ class DownloadManager {
     this.pumpQueue();
   }
 
+  /**
+   * Delete a download and, unless told otherwise, the file behind it.
+   *
+   * Once published, the gallery copy is the only copy, so removing the record
+   * without it would leave the file orphaned in the user's gallery while
+   * telling them it had been deleted. On Android 11+ the system shows its own
+   * confirmation before touching shared storage.
+   */
   async remove(id: string, deleteFile = true): Promise<void> {
     const record = this.records.get(id);
     if (record) {
       if (deleteFile && record.fileUri) {
         const file = new File(record.fileUri);
         if (file.exists) file.delete();
+      }
+      if (deleteFile && record.galleryAssetId) {
+        // A refusal at the system prompt must not strand the record: the user
+        // asked for it gone from Pebble either way.
+        try {
+          await unpublish(record.galleryAssetId);
+        } catch {
+          // Left in the gallery; nothing more this side can do about it.
+        }
       }
       this.discardThumbnail(record);
     }
