@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Directory,
   DownloadPauseState,
@@ -11,10 +10,8 @@ import { api, ApiError, pollJob } from '../api/client';
 import type { DownloadTicket, MediaKind, PrepareRequest } from '../api/types';
 import { GalleryPermissionError, GalleryUnavailableError, publish, unpublish } from './gallery';
 import { syncForegroundService } from './service';
+import * as store from './store';
 import type { DownloadListener, DownloadRecord, DownloadStatus } from './types';
-
-const STORE_KEY = 'pebble.downloads.v1';
-const PAUSE_KEY = 'pebble.pausestate.v1';
 
 /** Concurrent transfers. Above this, records sit in `queued`. */
 const MAX_ACTIVE = 2;
@@ -100,53 +97,55 @@ class DownloadManager {
   private patch(id: string, changes: Partial<DownloadRecord>): void {
     const current = this.records.get(id);
     if (!current) return;
-    this.records.set(id, { ...current, ...changes });
+    const next = { ...current, ...changes };
+    this.records.set(id, next);
     this.emit();
-    void this.persist();
+    // One row rather than the whole library - progress ticks are frequent.
+    void store.saveRecord(next).catch(() => undefined);
   }
 
   // ------------------------------------------------------------ persistence
 
-  private async persist(): Promise<void> {
-    await AsyncStorage.multiSet([
-      [STORE_KEY, JSON.stringify([...this.records.values()])],
-      [PAUSE_KEY, JSON.stringify([...this.pauseStates.entries()])],
-    ]);
+  private async persist(id: string): Promise<void> {
+    const record = this.records.get(id);
+    if (record) await store.saveRecord(record).catch(() => undefined);
   }
 
   async hydrate(): Promise<void> {
     if (this.hydrated) return;
     this.hydrated = true;
 
-    const [[, rawRecords], [, rawPause]] = await AsyncStorage.multiGet([
-      STORE_KEY,
-      PAUSE_KEY,
-    ]);
+    // Anything the AsyncStorage version wrote is carried across once, then
+    // its keys are dropped. Nothing here needs to know it ever existed.
+    await store.migrateLegacy().catch(() => 0);
 
-    if (rawRecords) {
-      for (const record of JSON.parse(rawRecords) as DownloadRecord[]) {
-        // Anything that claimed to be running when the process died is not
-        // running now. There is no in-flight task to reattach to.
-        const status: DownloadStatus =
-          record.status === 'preparing'
-            ? 'failed'
-            : record.status === 'downloading' || record.status === 'queued'
-              ? 'paused'
-              : record.status;
-        this.records.set(record.id, {
-          ...record,
-          status,
-          prepareProgress: record.prepareProgress ?? 0,
-          error:
-            status === 'failed' && record.status === 'preparing'
-              ? 'Interrupted while the server was preparing it'
-              : record.error,
-        });
-      }
+    for (const record of await store.loadRecords()) {
+      // Anything that claimed to be running when the process died is not
+      // running now. There is no in-flight task to reattach to.
+      const status: DownloadStatus =
+        record.status === 'preparing'
+          ? 'failed'
+          : record.status === 'downloading' || record.status === 'queued'
+            ? 'paused'
+            : record.status;
+
+      const restored = {
+        ...record,
+        status,
+        prepareProgress: record.prepareProgress ?? 0,
+        error:
+          status === 'failed' && record.status === 'preparing'
+            ? 'Interrupted while the server was preparing it'
+            : record.error,
+      };
+      this.records.set(record.id, restored);
+
+      // Write the demotion back, so a second crash does not keep finding
+      // rows that claim to be downloading.
+      if (status !== record.status) void store.saveRecord(restored).catch(() => undefined);
     }
-    if (rawPause) {
-      this.pauseStates = new Map(JSON.parse(rawPause) as [string, DownloadPauseState][]);
-    }
+
+    this.pauseStates = await store.loadPauseStates();
     this.emit();
   }
 
@@ -183,6 +182,11 @@ class DownloadManager {
       title: meta.title,
       platform: meta.platform,
       qualityLabel: meta.qualityLabel,
+      // The identity of this download, for the duplicate check. Taken from the
+      // request rather than the meta so it is exactly what was asked of the
+      // server.
+      sourceUrl: request.url,
+      formatId: request.format_id,
       filename: '',
       mimeType: '',
       fileUri: '',
@@ -203,7 +207,7 @@ class DownloadManager {
       thumbnailUrl: meta.thumbnailUrl ?? undefined,
     });
     this.emit();
-    void this.persist();
+    void this.persist(id);
 
     void this.cacheThumbnail(id);
     void this.prepareThenDownload(id, request);
@@ -325,6 +329,7 @@ class DownloadManager {
   private complete(id: string, file: File): void {
     this.tasks.delete(id);
     this.pauseStates.delete(id);
+    void store.deletePauseState(id).catch(() => undefined);
     this.patch(id, {
       status: 'completed',
       completedAt: Date.now(),
@@ -399,10 +404,14 @@ class DownloadManager {
     await task.pauseAsync();
     try {
       // Persisted so the transfer survives an app kill, not just a backgrounding.
-      this.pauseStates.set(id, task.savable());
+      const savable = task.savable();
+      this.pauseStates.set(id, savable);
+      void store.savePauseState(id, savable).catch(() => undefined);
     } catch {
       // No resume data available - resume will restart from zero.
       this.pauseStates.delete(id);
+      void store.deletePauseState(id).catch(() => undefined);
+    void store.deletePauseState(id).catch(() => undefined);
     }
     this.tasks.delete(id);
     this.patch(id, { status: 'paused' });
@@ -467,6 +476,8 @@ class DownloadManager {
         if (partial.exists) partial.delete();
       }
       this.pauseStates.delete(id);
+      void store.deletePauseState(id).catch(() => undefined);
+    void store.deletePauseState(id).catch(() => undefined);
       this.patch(id, { bytesWritten: 0 });
       await this.begin(id);
       return;
@@ -498,6 +509,7 @@ class DownloadManager {
     this.tasks.get(id)?.cancel();
     this.tasks.delete(id);
     this.pauseStates.delete(id);
+    void store.deletePauseState(id).catch(() => undefined);
 
     if (record) {
       if (record.fileUri) {
@@ -510,7 +522,7 @@ class DownloadManager {
 
     this.records.delete(id);
     this.emit();
-    void this.persist();
+    void store.deleteRecord(id).catch(() => undefined);
     this.pumpQueue();
   }
 
@@ -542,7 +554,38 @@ class DownloadManager {
     }
     this.records.delete(id);
     this.emit();
-    void this.persist();
+    void store.deleteRecord(id).catch(() => undefined);
+  }
+
+  /** Note that the user actually watched this, for storage reclaim later. */
+  markOpened(id: string): void {
+    if (!this.records.get(id)) return;
+    this.patch(id, { lastOpenedAt: Date.now() });
+  }
+
+  /**
+   * An earlier download of the same thing, if there is one.
+   *
+   * Keyed on source, format and clip bounds - not the url, which has many
+   * forms for one post, and not the title, which repeats.
+   */
+  async findExisting(request: {
+    url: string;
+    format_id: string;
+    clip?: { start: number; end: number } | null;
+  }): Promise<DownloadRecord | null> {
+    await this.hydrate();
+    return store.findExisting({
+      sourceUrl: request.url,
+      formatId: request.format_id,
+      clip: request.clip ?? null,
+    });
+  }
+
+  /** Totals for a storage screen: how much, and how much never opened. */
+  async usage(): Promise<{ count: number; bytes: number; neverOpened: number }> {
+    await this.hydrate();
+    return store.usage();
   }
 
   private discardThumbnail(record: DownloadRecord): void {

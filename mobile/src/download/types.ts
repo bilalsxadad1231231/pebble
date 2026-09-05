@@ -22,6 +22,14 @@ export type DownloadRecord = {
   platform: string;
   qualityLabel: string;
 
+  /**
+   * What was asked for. Together with `formatId` and the clip bounds this is
+   * the identity of a download - the same post has many url forms, so nothing
+   * downstream should key on the url alone.
+   */
+  sourceUrl: string;
+  formatId: string;
+
   filename: string;
   mimeType: string;
   /**
@@ -52,6 +60,8 @@ export type DownloadRecord = {
 
   createdAt: number;
   completedAt?: number;
+  /** Last time the file was opened, so storage reclaim can find dead weight. */
+  lastOpenedAt?: number;
 
   /**
    * Asset id once published to the device gallery (a `content://` uri on

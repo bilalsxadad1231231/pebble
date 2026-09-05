@@ -1,6 +1,7 @@
 import { Alert } from 'react-native';
 
 import PebbleDownloads from '../../modules/pebble-downloads';
+import { downloads } from './manager';
 import type { DownloadRecord } from './types';
 
 /**
@@ -31,10 +32,15 @@ export async function openDownload(record: DownloadRecord): Promise<void> {
   }
 
   const opened = await PebbleDownloads.openFile(uri).catch(() => false);
-  if (!opened) {
-    Alert.alert(
-      'No app can open this',
-      'Nothing on this phone is registered to play this file type.',
-    );
+  if (opened) {
+    // "Never opened" is the whole basis of storage reclaim, so it only means
+    // anything if opening is actually recorded.
+    downloads.markOpened(record.id);
+    return;
   }
+
+  Alert.alert(
+    'No app can open this',
+    'Nothing on this phone is registered to play this file type.',
+  );
 }
