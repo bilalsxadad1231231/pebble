@@ -37,6 +37,16 @@
           "savePhotosPermission": "Allow Pebble to save downloads to your gallery.",
           "isAccessMediaLocationEnabled": false
         }
+      ],
+      [
+        "expo-share-intent",
+        {
+          "androidIntentFilters": [
+            "text/*"
+          ],
+          "disableAndroid": false,
+          "disableIOS": true
+        }
       ]
     ],
     "scheme": "pebble",

@@ -115,6 +115,9 @@ export default function HomeScreen() {
   // claimed on the first render, since a share intent can launch the app.
   useEffect(() => {
     const open = (link: inbound.InboundLink) => {
+      // Clear the cold-start slot too, so a later remount does not reopen a
+      // link this screen has already acted on.
+      inbound.claimPending();
       inbound.markHandled(link.url);
       setUrl(link.url);
       void resolve(link.url);
