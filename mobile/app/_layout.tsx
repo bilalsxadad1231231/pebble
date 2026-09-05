@@ -11,6 +11,7 @@ import {
 
 import { downloads } from '../src/download/manager';
 import * as inbound from '../src/links/inbound';
+import { useDeepLinkBridge } from '../src/links/useDeepLinkBridge';
 import { useShareIntentBridge } from '../src/links/useShareIntentBridge';
 import { colors } from '../src/theme/neumorphic';
 
@@ -26,6 +27,7 @@ export default function RootLayout() {
   }, []);
 
   useShareIntentBridge();
+  useDeepLinkBridge();
 
   // A link can arrive while the user is on Library or Settings, so routing
   // lives here rather than on Home - Home only knows how to resolve one.

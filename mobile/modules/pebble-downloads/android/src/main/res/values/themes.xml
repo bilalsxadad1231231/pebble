@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!--
+    The paste activity exists only to hold focus long enough to read the
+    clipboard. It must not paint anything: no window background, no animation,
+    no entry in recents - the user should see the tile collapse and the app
+    open, never a blank frame in between.
+  -->
+  <style name="Theme.Pebble.Invisible" parent="@android:style/Theme.Translucent.NoTitleBar">
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowNoDisplay">true</item>
+    <item name="android:windowAnimationStyle">@null</item>
+  </style>
+</resources>

@@ -10,5 +10,25 @@
       android:name=".DownloadForegroundService"
       android:exported="false"
       android:foregroundServiceType="dataSync" />
+
+    <!-- Has focus, so it may read the clipboard; a TileService may not. -->
+    <activity
+      android:name=".PasteAndDownloadActivity"
+      android:exported="true"
+      android:excludeFromRecents="true"
+      android:noHistory="true"
+      android:taskAffinity=""
+      android:theme="@style/Theme.Pebble.Invisible" />
+
+    <service
+      android:name=".PebbleTileService"
+      android:exported="true"
+      android:icon="@android:drawable/stat_sys_download"
+      android:label="Paste &amp; Download"
+      android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+      <intent-filter>
+        <action android:name="android.service.quicksettings.action.QS_TILE" />
+      </intent-filter>
+    </service>
   </application>
 </manifest>
