@@ -52,7 +52,8 @@ daily loop.** Once the dev client is installed, `npx expo start` is all you need
 | Screen, component, logic (`app/`, `src/`) | nothing — Fast Refresh handles it |
 | Backend Python | restart uvicorn |
 | `mobile/.env` | `npx expo start --clear` — `EXPO_PUBLIC_*` is inlined at bundle time |
-| Kotlin in `modules/pebble-downloads/` | `npx expo run:android` |
+| Kotlin or `res/` in `modules/pebble-downloads/` | `npx expo run:android` |
+| `plugins/*.js` config plugins | `npx expo run:android` |
 | New native package, `app.json` plugins/permissions, icons | `npx expo run:android` |
 
 Plugging or unplugging the cable is **not** a native change.
@@ -146,6 +147,13 @@ npx expo export --platform android             # proves the bundle builds
 `expo-doctor` will **not** catch a transitive native version conflict — see
 Troubleshooting. A green doctor run is not proof the native build works.
 
+**Known: doctor reports 20/21.** Five Expo packages sit one patch version
+behind what the SDK now expects. `npx expo install --fix` cannot apply them:
+`react-dom@19.2.8` demands `react ^19.2.8` while the project is on `19.2.3`, so
+npm refuses to resolve. Forcing it with `--legacy-peer-deps` is what caused the
+`executeSync` build failure below, so the drift is left alone deliberately.
+Revisit when react itself is bumped.
+
 To verify only the native module compiles, without a full app build:
 
 ```powershell
@@ -183,6 +191,22 @@ cd android
 - [ ] Tapping a row opens the progress dial
 - [ ] Cancel removes the row and the partial file
 
+### Entry points (dev build only)
+
+- [ ] Share a link from Instagram/YouTube → Pebble appears in the share sheet,
+      and opens on the format picker with the link resolved
+- [ ] Share while Pebble is already open, from another tab → it switches to Home
+      and resolves
+- [ ] Share the *same* link twice → it resolves both times
+- [ ] Add the **Paste & Download** tile from the quick-settings edit screen;
+      copy a link, tap it → Pebble opens on the picker
+- [ ] Tap the tile with an empty clipboard → toast, app does not open
+- [ ] Long-press the launcher icon → **Paste** shortcut does the same
+- [ ] Copy a link elsewhere, then switch to Pebble → the copied-link card
+      appears above the paste field
+- [ ] Dismiss it, leave and return → it does **not** come back
+- [ ] Download it, leave and return → it does **not** come back
+
 ### Gallery and background (dev build only)
 
 - [ ] First completed download prompts for gallery permission
@@ -202,7 +226,8 @@ cd android
 | Resolve, formats, Tier 1, downloads | yes | yes |
 | Gallery save | no — rows say **App only** | yes |
 | Background downloads | no | yes |
-| Share intent, QS tile (planned) | no | yes |
+| Clipboard offer on foreground | yes | yes |
+| Share intent, QS tile, launcher shortcut | no | yes |
 
 Both features degrade rather than crash in Expo Go, so it stays useful for JS
 iteration.

@@ -155,8 +155,8 @@ duplicated rule has already drifted once in this project.
 | Backend API, hybrid delivery, pause/resume | Built, verified against live traffic |
 | Clip trimming, fit-to-size, audio metadata | Built, verified against real ffmpeg |
 | Android app: home, picker, library, downloads | Built |
-| Gallery save, background downloads, thumbnails | Built |
-| Share intent, quick-settings tile, clipboard | Planned |
+| Gallery save, background downloads, thumbnails | Built, verified on a device |
+| Share intent, quick-settings tile, launcher shortcut, clipboard | Built |
 | In-app playback, subtitles, private vault | Planned |
 
 Roadmap and the reasoning behind each decision live in
@@ -170,8 +170,9 @@ Roadmap and the reasoning behind each decision live in
   a shared volume.
 - No auth or rate limiting — **do not expose the backend publicly as-is**.
 - Private and age-gated posts need cookies passed to yt-dlp; not wired up.
-- Gallery save and background downloads need a development build; in Expo Go
-  they degrade rather than crash.
+- Gallery save, background downloads, the share sheet, the quick-settings tile
+  and the launcher shortcut all need a development build. In Expo Go they
+  degrade rather than crash; the clipboard offer works everywhere.
 
 ---
 
