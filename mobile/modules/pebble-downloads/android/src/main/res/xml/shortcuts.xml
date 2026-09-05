@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Long-press the launcher icon -> Paste & Download.
+
+  Free: it points at the same invisible activity the quick-settings tile uses,
+  so the whole feature is this file plus a manifest reference. It also reaches
+  the users who never edit their quick settings panel.
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+  <shortcut
+    android:shortcutId="paste-and-download"
+    android:enabled="true"
+    android:icon="@android:drawable/stat_sys_download"
+    android:shortcutShortLabel="@string/shortcut_paste_short"
+    android:shortcutLongLabel="@string/shortcut_paste_long">
+    <intent
+      android:action="android.intent.action.VIEW"
+      android:targetPackage="com.pebble.downloader"
+      android:targetClass="com.pebble.downloads.PasteAndDownloadActivity" />
+    <categories android:name="android.shortcut.conversation" />
+  </shortcut>
+</shortcuts>

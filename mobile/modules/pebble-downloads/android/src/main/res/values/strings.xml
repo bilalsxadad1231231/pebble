@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Launchers truncate the short label hard; keep it under ~10 characters. -->
+  <string name="shortcut_paste_short">Paste</string>
+  <string name="shortcut_paste_long">Paste &amp; Download</string>
+</resources>

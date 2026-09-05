@@ -47,7 +47,8 @@
           "disableAndroid": false,
           "disableIOS": true
         }
-      ]
+      ],
+      "./plugins/withPebbleShortcuts"
     ],
     "scheme": "pebble",
     "backgroundColor": "#E7E9EE",
