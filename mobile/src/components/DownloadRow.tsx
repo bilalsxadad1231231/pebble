@@ -12,6 +12,7 @@ import {
   radii,
   spacing,
 } from '../theme/neumorphic';
+import { confirmDestructive } from '../utils/confirm';
 import { formatBytes, formatDuration } from '../utils/format';
 import { Icon, IconName } from './Icon';
 import { NeuIconButton, NeuInset, NeuPressable } from './Neu';
@@ -109,8 +110,27 @@ export function DownloadRow({
             muted
             onPress={() => {
               void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              if (done) void downloads.remove(record.id);
-              else void downloads.cancel(record.id);
+              // A 34dp icon with no undo behind it is a mis-tap away from
+              // losing a finished file, so both branches ask first.
+              if (done) {
+                confirmDestructive({
+                  title: 'Delete this download?',
+                  message: record.galleryAssetId
+                    ? 'It stays in your gallery; only Pebble’s copy is removed.'
+                    : 'The file will be permanently deleted from this device.',
+                  confirmLabel: 'Delete',
+                  onConfirm: () => void downloads.remove(record.id),
+                });
+              } else {
+                confirmDestructive({
+                  title: 'Cancel this download?',
+                  message: record.bytesWritten
+                    ? `${formatBytes(record.bytesWritten)} already transferred will be discarded.`
+                    : 'This download will be removed.',
+                  confirmLabel: 'Cancel download',
+                  onConfirm: () => void downloads.cancel(record.id),
+                });
+              }
             }}
           />
         </View>

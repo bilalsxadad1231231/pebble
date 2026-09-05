@@ -11,6 +11,7 @@ import { Screen, ScreenHeader } from '../../src/components/Screen';
 import { downloads } from '../../src/download/manager';
 import type { DownloadRecord } from '../../src/download/types';
 import { colors, fonts, fontSizes, radii, spacing } from '../../src/theme/neumorphic';
+import { confirmDestructive } from '../../src/utils/confirm';
 import { formatBytes, formatDuration } from '../../src/utils/format';
 
 /**
@@ -93,11 +94,25 @@ export default function DownloadScreen() {
         title={preparing ? 'Preparing' : done ? 'Saved' : 'Downloading'}
         leftIcon="back"
         onLeftPress={() => router.back()}
-        rightIcon="close"
+        // No destructive action in the header once the file exists. The close
+        // affordance used to cancel unconditionally, which meant opening a
+        // finished download and tapping it deleted the file.
+        rightIcon={done ? undefined : 'close'}
         rightLabel="Cancel download"
-        onRightPress={async () => {
-          if (record) await downloads.cancel(record.id);
-          router.back();
+        onRightPress={() => {
+          if (!record) {
+            router.back();
+            return;
+          }
+          confirmDestructive({
+            title: 'Cancel this download?',
+            message: `${formatBytes(record.bytesWritten)} already transferred will be discarded.`,
+            confirmLabel: 'Cancel download',
+            onConfirm: () => {
+              void downloads.cancel(record.id);
+              router.back();
+            },
+          });
         }}
       />
 
@@ -159,7 +174,32 @@ export default function DownloadScreen() {
             <Text style={styles.actionLabel}>Done</Text>
           </NeuPressable>
 
-          {!done && !preparing ? (
+          {done && record ? (
+            // Deleting is the one thing you might want to do to a finished
+            // file from here, so it is an explicit, labelled button rather
+            // than an ambiguous icon in the header.
+            <NeuPressable
+              radius={radii.xl}
+              onPress={() =>
+                confirmDestructive({
+                  title: 'Delete this download?',
+                  message: record.galleryAssetId
+                    ? 'It stays in your gallery; only Pebble’s copy is removed.'
+                    : 'The file will be permanently deleted from this device.',
+                  confirmLabel: 'Delete',
+                  onConfirm: () => {
+                    void downloads.remove(record.id);
+                    router.back();
+                  },
+                })
+              }
+              accessibilityLabel={`Delete ${record.title}`}
+              style={styles.action}
+            >
+              <Icon name="trash" size={16} color={colors.textMuted} />
+              <Text style={styles.actionLabel}>Delete</Text>
+            </NeuPressable>
+          ) : !preparing ? (
             <NeuPressable
               radius={radii.xl}
               onPress={toggle}

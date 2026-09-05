@@ -53,7 +53,7 @@ export default function LibraryScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title="Library" rightIcon="search" rightLabel="Search downloads" />
+      <ScreenHeader title="Library" />
 
       <View style={styles.tabs}>
         {FILTERS.map(({ key, label }) => (

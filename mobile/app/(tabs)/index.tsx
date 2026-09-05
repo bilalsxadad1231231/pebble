@@ -183,7 +183,12 @@ export default function HomeScreen() {
 
   return (
     <Screen>
-      <ScreenHeader title="Pebble" rightIcon="settings" rightLabel="Settings" />
+      <ScreenHeader
+        title="Pebble"
+        rightIcon="settings"
+        rightLabel="Settings"
+        onRightPress={() => router.navigate('/settings')}
+      />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
