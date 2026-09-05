@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 import { downloads } from '../download/manager';
+import { openDownload } from '../download/open';
 import type { DownloadRecord } from '../download/types';
 import {
   colors,
@@ -81,7 +82,10 @@ export function DownloadRow({
             <Action
               icon="play"
               label={`Play ${record.title}`}
-              onPress={onOpen}
+              onPress={() => {
+                void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                void openDownload(record.fileUri);
+              }}
             />
           ) : failed ? (
             <Action

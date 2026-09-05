@@ -33,6 +33,12 @@ class PebbleDownloadsModule : Module() {
       true
     }
 
+    /** Open a finished download in whatever app the user picks. */
+    AsyncFunction("openFile") { uri: String ->
+      val context = appContext.reactContext ?: return@AsyncFunction false
+      FileOpener.open(context, uri)
+    }
+
     /** Tear the service down once nothing is transferring. */
     AsyncFunction("stop") {
       val context = appContext.reactContext ?: return@AsyncFunction false

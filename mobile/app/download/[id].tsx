@@ -9,6 +9,7 @@ import { ProgressDial } from '../../src/components/ProgressDial';
 import { Thumbnail } from '../../src/components/Thumbnail';
 import { Screen, ScreenHeader } from '../../src/components/Screen';
 import { downloads } from '../../src/download/manager';
+import { openDownload } from '../../src/download/open';
 import type { DownloadRecord } from '../../src/download/types';
 import { colors, fonts, fontSizes, radii, spacing } from '../../src/theme/neumorphic';
 import { confirmDestructive } from '../../src/utils/confirm';
@@ -165,14 +166,26 @@ export default function DownloadScreen() {
         </View>
 
         <View style={styles.actions}>
-          <NeuPressable
-            radius={radii.xl}
-            onPress={() => router.back()}
-            accessibilityLabel="Back to home"
-            style={styles.action}
-          >
-            <Text style={styles.actionLabel}>Done</Text>
-          </NeuPressable>
+          {done && record ? (
+            <NeuPressable
+              radius={radii.xl}
+              onPress={() => void openDownload(record.fileUri)}
+              accessibilityLabel={`Open ${record.title}`}
+              style={styles.action}
+            >
+              <Icon name="play" size={16} color={colors.accentPressedText} />
+              <Text style={[styles.actionLabel, styles.actionLabelAccent]}>Open</Text>
+            </NeuPressable>
+          ) : (
+            <NeuPressable
+              radius={radii.xl}
+              onPress={() => router.back()}
+              accessibilityLabel="Back to home"
+              style={styles.action}
+            >
+              <Text style={styles.actionLabel}>Done</Text>
+            </NeuPressable>
+          )}
 
           {done && record ? (
             // Deleting is the one thing you might want to do to a finished
