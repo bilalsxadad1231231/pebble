@@ -73,7 +73,11 @@ async function resolveAlbum(
   const existing = await lib.Album.get(ALBUM_NAME);
   if (existing) return existing;
   // An album cannot be created empty, so the first saved file seeds it.
-  return lib.Album.create(ALBUM_NAME, [firstAsset], false);
+  //
+  // moveAssets must be true: with false, Android *copies* the asset into the
+  // album and leaves the original sitting outside it, so the first download of
+  // every install would occupy two slots in the gallery instead of one.
+  return lib.Album.create(ALBUM_NAME, [firstAsset], true);
 }
 
 /**
