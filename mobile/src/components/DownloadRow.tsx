@@ -120,7 +120,7 @@ export function DownloadRow({
                 confirmDestructive({
                   title: 'Delete this download?',
                   message: record.galleryAssetId
-                    ? 'It stays in your gallery; only Pebble’s copy is removed.'
+                    ? 'This removes it from your gallery too. There is only one copy.'
                     : 'The file will be permanently deleted from this device.',
                   confirmLabel: 'Delete',
                   onConfirm: () => void downloads.remove(record.id),
