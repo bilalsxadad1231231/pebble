@@ -48,7 +48,8 @@
           "disableIOS": true
         }
       ],
-      "./plugins/withPebbleShortcuts"
+      "./plugins/withPebbleShortcuts",
+      "expo-sqlite"
     ],
     "scheme": "pebble",
     "backgroundColor": "#E7E9EE",
